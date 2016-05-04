@@ -16,9 +16,9 @@ export default function() {
   function started(d, i, nodes) {
     var node = this,
         parent = node.parentNode,
-        point0 = mouse(parent),
-        ox = d.x - point0[0],
-        oy = d.y - point0[1],
+        origin = mouse(parent),
+        ox = d.x - origin[0] || 0,
+        oy = d.y - origin[1] || 0,
         dragged = false;
 
     var context = select(window(node))
@@ -34,11 +34,10 @@ export default function() {
     }
 
     function moved() {
-      var point1 = mouse(parent);
-      point0 = point1;
+      var p = mouse(parent);
+      d.x = p[0] + ox;
+      d.y = p[1] + oy;
       dragged = true;
-      d.x = point1[0] + ox;
-      d.y = point1[1] + oy;
       emit("drag");
     }
 
