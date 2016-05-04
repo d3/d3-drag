@@ -1,49 +1,62 @@
-import {select, mouse, window} from "d3-selection";
+import {dispatch} from "d3-dispatch";
+import {event, select, mouse, window} from "d3-selection";
+
+function prevent() {
+  event.preventDefault();
+}
 
 // TODO touch
-// TODO default origin detects {x, y} or [x, y] automatically?
-export default function(origin) {
+export default function() {
+  var event = dispatch("dragstart", "drag", "dragend");
 
-  // TODO suppress native dragstart, selectstart
-  function mousedowned() {
-    var context = select(window(this)).on("mousemove.drag", mousemoved).on("mouseup.drag", mouseupped),
-        subject = select(this),
-        parent = this.parentNode,
+  function drag(selection) {
+    selection.on("mousedown.drag", started);
+  }
+
+  function started(d, i, nodes) {
+    var node = this,
+        parent = node.parentNode,
         point0 = mouse(parent),
-        offsetX = 0,
-        offsetY = 0;
+        ox = d.x - point0[0],
+        oy = d.y - point0[1],
+        dragged = false;
 
-    if (origin != null) {
-      var o = origin.apply(this, arguments);
-      offsetX = o.x - point0[0];
-      offsetY = o.y - point0[1];
+    var context = select(window(node))
+        .on("dragstart.drag", prevent)
+        .on("selectstart.drag", prevent)
+        .on("mousemove.drag", moved)
+        .on("mouseup.drag", ended);
+
+    emit("dragstart");
+
+    function emit(type) {
+      event.call(type, node, d, i, nodes);
     }
 
-    subject.dispatch("d3:dragstart");
-
-    function mousemoved() {
-      var point1 = mouse(parent),
-          dx = point1[0] - point0[0],
-          dy = point1[1] - point0[1];
+    function moved() {
+      var point1 = mouse(parent);
       point0 = point1;
-      subject.dispatch("d3:drag", {
-        detail: {
-          x: point1[0] + offsetX,
-          y: point1[1] + offsetY,
-          dx: dx,
-          dy: dy
-        }
-      });
+      dragged = true;
+      d.x = point1[0] + ox;
+      d.y = point1[1] + oy;
+      emit("drag");
     }
 
-    // TODO suppress click if dragged
-    function mouseupped() {
-      context.on("mousemove.drag", null).on("mouseup.drag", null);
-      subject.dispatch("d3:dragend");
+    function ended() {
+      context.on(".drag", null);
+      if (dragged) context.on("click.drag", prevent, true), setTimeout(afterended, 0);
+      emit("dragend");
+    }
+
+    function afterended() {
+      context.on("click.drag", null);
     }
   }
 
-  return function(selection) {
-    selection.on("mousedown.drag", mousedowned);
+  drag.on = function() {
+    var value = event.on.apply(event, arguments);
+    return value === event ? drag : value;
   };
+
+  return drag;
 }

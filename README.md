@@ -8,6 +8,7 @@ If you use NPM, `npm install d3-drag`. Otherwise, download the [latest release](
 
 ```html
 <script src="https://d3js.org/d3-selection.v0.7.min.js"></script>
+<script src="https://d3js.org/d3-dispatch.v0.4.min.js"></script>
 <script src="https://d3js.org/d3-drag.v0.0.min.js"></script>
 <script>
 
