@@ -82,14 +82,14 @@ export default function() {
 
       function ended() {
         if (!position(parent, id)) return; // This touch didn’t end.
+        view.on(name(), null);
         context.on(name(), null);
         if (dragged) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
-        else afterended();
         emit("dragend");
       }
 
       function afterended() {
-        view.on(name(), null);
+        view.on(name("click"), null);
       }
     };
   }
