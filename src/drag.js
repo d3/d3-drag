@@ -22,7 +22,7 @@ function touchId() {
   return event.changedTouches[0].identifier;
 }
 
-// For touch events, listen to the target directly.
+// Listen to the event target for touchmove, touchend and touchcancel.
 function touchContext() {
   return event.target;
 }
