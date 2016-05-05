@@ -9,8 +9,8 @@ function mouseId() {
   return null;
 }
 
-// For mouse events, listen to the window for mousemove and mouseup such that we
-// continue to receive events if the mouse goes outside the window.
+// Listen to the window for mousemove and mouseup such that we continue to
+// receive events if the mouse goes outside the window.
 function mouseContext() {
   return event.view;
 }
