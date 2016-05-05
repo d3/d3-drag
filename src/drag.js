@@ -1,7 +1,7 @@
 import {dispatch} from "d3-dispatch";
 import {event, select, mouse, touch} from "d3-selection";
 
-function prevent() {
+function nodefault() {
   event.preventDefault();
 }
 
@@ -47,8 +47,8 @@ export default function() {
           ox = d.x - origin[0] || 0,
           oy = d.y - origin[1] || 0,
           dragged = false,
-          view = select(event.view).on(scope("touchmove dragstart selectstart"), prevent, true),
-          context = select(contextify()).on(scope(move), moved).on(scope(end), ended);
+          view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
+          context = select(contextify()).on(name(move), moved).on(name(end), ended);
 
       // It’s tempting to call preventDefault on touchstart and mousedown so as
       // to prevent undesirable default behaviors, such as native dragging of
@@ -62,8 +62,8 @@ export default function() {
         listeners.call(type, node, d, i, nodes);
       }
 
-      function scope(types) {
-        var name = ".drag" + (id == null ? "" : "-" + id);
+      function name(types) {
+        var name = id == null ? ".drag" : ".drag-" + id;
         return types == null ? name : types.trim()
             .split(/^|\s+/)
             .map(function(type) { return type + name; })
@@ -77,18 +77,19 @@ export default function() {
         d.y = p[1] + oy;
         dragged = true;
         emit("drag");
+        nodefault();
       }
 
       function ended() {
         if (!position(parent, id)) return; // This touch didn’t end.
-        context.on(scope(), null);
-        if (dragged) view.on(scope("click"), prevent, true), setTimeout(afterended, 0);
+        context.on(name(), null);
+        if (dragged) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
         else afterended();
         emit("dragend");
       }
 
       function afterended() {
-        view.on(scope(), null);
+        view.on(name(), null);
       }
     };
   }
