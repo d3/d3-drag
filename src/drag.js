@@ -70,6 +70,15 @@ export default function(started) {
       mousestart = start("mousemove", "mouseup", mouse, mouseContext),
       touchstart = start("touchmove", "touchend touchcancel", touch, touchContext);
 
+  // I’d like to call preventDefault on mousedown to disable native dragging
+  // of links or images and native text selection. However, in Chrome this
+  // causes mousemove and mouseup events outside an iframe to be dropped:
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=269917
+  // And if you preventDefault on touchstart on iOS, it prevents the click
+  // event on touchend, even if there was no touchmove! So instead, we
+  // cancel the specific undesirable behaviors. If you want to change this
+  // behavior, you can unregister these listeners!
+
   var listeners = dispatch("start", "drag", "end")
       .on("start.nodrag", nodrag)
       .on("start.noselect", noselect)
@@ -113,15 +122,6 @@ export default function(started) {
           return true;
         }
       })) return;
-
-      // I’d like to call preventDefault on mousedown to disable native dragging
-      // of links or images and native text selection. However, in Chrome this
-      // causes mousemove and mouseup events outside an iframe to be dropped:
-      // https://bugs.chromium.org/p/chromium/issues/detail?id=269917
-      // And if you preventDefault on touchstart on iOS, it prevents the click
-      // event on touchend, even if there was no touchmove! So instead, we
-      // cancel the specific undesirable behaviors. If you want to change this
-      // behavior, you can unregister these listeners on start.
 
       var sublisteners = listeners.copy(),
           startevent = {type: "start", identifier: id, x: p0[0] + dx, y: p0[1] + dy, on: on},
