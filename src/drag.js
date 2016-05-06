@@ -1,4 +1,4 @@
-import {dispatch} from "d3-dispatch";
+import constant from "./constant";
 import {event, select, mouse, touch} from "d3-selection";
 
 function nodefault() {
@@ -32,29 +32,39 @@ function touchContext() {
   return event.target;
 }
 
-export default function() {
-  var listeners = dispatch("dragstart", "drag", "dragend"),
-      mousestarted = started("mousemove", "mouseup", mouse, mouseId, mouseContext),
-      touchstarted = started("touchmove", "touchend touchcancel", touch, touchId, touchContext),
-      filter = mainbutton;
+function parent() {
+  return this.parentNode;
+}
+
+function noop() {}
+
+export default function(dragstarted) {
+  var x = null,
+      y = null,
+      container = parent,
+      filter = mainbutton,
+      mousedowned = started("mousemove", "mouseup", mouse, mouseId, mouseContext),
+      touchstarted = started("touchmove", "touchend touchcancel", touch, touchId, touchContext);
 
   function drag(selection) {
     selection
-        .on("mousedown.drag", mousestarted)
+        .on("mousedown.drag", mousedowned)
         .on("touchstart.drag", touchstarted);
   }
 
   function started(move, end, position, identify, contextify) {
     return function(d, i, nodes) {
-      if (!filter()) return;
+      if (!filter.call(this, d, i, nodes)) return;
 
-      var id = identify(),
-          node = this,
-          parent = node.parentNode,
-          origin = position(parent, id),
-          ox = d.x - origin[0] || 0,
-          oy = d.y - origin[1] || 0,
-          dragged = false,
+      var listen = dragstarted.call(this, d, i, nodes) || noop,
+          dragged = typeof listen === "function" ? listen : listen.drag || noop,
+          dragended = listen.dragend || noop,
+          noclick = false,
+          id = identify(),
+          node = container.call(this, d, i, nodes),
+          p0 = position(node, id),
+          ox = x == null ? 0 : x.call(this, d, i, nodes) - p0[0],
+          oy = y == null ? 0 : y.call(this, d, i, nodes) - p0[1],
           view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
           context = select(contextify()).on(name(move), moved).on(name(end), ended);
 
@@ -67,12 +77,6 @@ export default function() {
       // event on touchend, even if there was no touchmove! So instead, we
       // cancel the specific undesirable behaviors.
 
-      emit("dragstart");
-
-      function emit(type) {
-        listeners.call(type, node, d, i, nodes);
-      }
-
       function name(types) {
         var name = id == null ? ".drag" : ".drag-" + id;
         return types == null ? name : types.trim()
@@ -82,21 +86,18 @@ export default function() {
       }
 
       function moved() {
-        var p = position(parent, id);
+        var p = position(node, id);
         if (p == null) return; // This touch didn’t change.
-        d.x = p[0] + ox;
-        d.y = p[1] + oy;
-        dragged = true;
-        emit("drag");
-        nodefault();
+        nodefault(), noclick = true;
+        dragged.call(drag, p[0] + ox, p[1] + oy);
       }
 
       function ended() {
-        if (!position(parent, id)) return; // This touch didn’t end.
+        if (!position(node, id)) return; // This touch didn’t end.
         view.on(name(), null);
         context.on(name(), null);
-        if (dragged) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
-        emit("dragend");
+        if (noclick) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
+        dragended.call(drag);
       }
 
       function afterended() {
@@ -105,13 +106,20 @@ export default function() {
     };
   }
 
-  drag.on = function() {
-    var value = listeners.on.apply(listeners, arguments);
-    return value === listeners ? drag : value;
+  drag.x = function(_) {
+    return arguments.length ? (x = _ == null || typeof _ === "function" ? _ : constant(+_), drag) : x;
+  };
+
+  drag.y = function(_) {
+    return arguments.length ? (y = _ == null || typeof _ === "function" ? _ : constant(+_), drag) : y;
+  };
+
+  drag.container = function(_) {
+    return arguments.length ? (container = typeof _ === "function" ? _ : constant(_), drag) : container;
   };
 
   drag.filter = function(_) {
-    return arguments.length ? (filter = _, drag) : filter;
+    return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), drag) : filter;
   };
 
   return drag;
