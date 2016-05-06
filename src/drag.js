@@ -58,11 +58,14 @@ export default function() {
           view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
           context = select(contextify()).on(name(move), moved).on(name(end), ended);
 
-      // It’s tempting to call preventDefault on touchstart and mousedown so as
-      // to prevent undesirable default behaviors, such as native dragging of
-      // links or images, text selection, and scrolling. However, this would
-      // also prevent desirable default behaviors, such as unfocusing a focused
-      // input field. So instead, we cancel the specific undesirable behaviors.
+      // I’d like to call preventDefault on mousedown to disable native dragging
+      // of links or images and native text selection. However, in Chrome this
+      // causes mousemove and mouseup events outside an iframe to be dropped:
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=269917
+      //
+      // And if you preventDefault on touchstart on iOS, it prevents the click
+      // event on touchend, even if there was no touchmove! So instead, we
+      // cancel the specific undesirable behaviors.
 
       emit("dragstart");
 
