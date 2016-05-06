@@ -97,7 +97,7 @@ export default function(dragstarted) {
         var p = position(parent, id);
         if (p == null) return; // This touch didn’t change.
         nodefault(), noclick = true;
-        dragged.call(that, p[0] + dx, p[1] + dy, id);
+        dragged.call(that, p[0] + dx, p[1] + dy);
       }
 
       function ended() {
@@ -106,7 +106,7 @@ export default function(dragstarted) {
         view.on(name(), null);
         context.on(name(), null);
         if (noclick) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
-        dragended.call(that, p[0] + dx, p[1] + dy, id);
+        dragended.call(that, p[0] + dx, p[1] + dy);
       }
 
       function afterended() {
