@@ -52,9 +52,7 @@ export default function(dragstarted) {
   function started(move, end, position, identify, contextify) {
     return function() {
       var that = this;
-      identify().forEach(function(id) {
-        if (!filter.call(that, id)) return;
-
+      identify().filter(filter, that).forEach(function(id) {
         var node = container.call(that, id),
             p0 = position(node, id),
             listen = dragstarted.call(that, p0[0], p0[1], id) || noop,
