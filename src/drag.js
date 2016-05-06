@@ -37,6 +37,31 @@ function touchContext() {
   return event.target;
 }
 
+function nodrag() {
+  var name = ".nodrag" + (event.identifier == null ? "" : "-" + event.identifier),
+      view = select(event.sourceEvent.view).on("dragstart" + name, nodefault, true);
+  event.on("end" + name, function() { view.on("dragstart" + name, null); });
+}
+
+function noselect() {
+  var name = ".noselect" + (event.identifier == null ? "" : "-" + event.identifier),
+      view = select(event.sourceEvent.view).on("selectstart" + name, nodefault, true);
+  event.on("end" + name, function() { view.on("selectstart" + name, null); });
+}
+
+function noscroll() {
+  var name = ".noscroll" + (event.identifier == null ? "" : "-" + event.identifier);
+  event.on("drag" + name, function() { event.sourceEvent.preventDefault(); });
+}
+
+function noclick() {
+  var name = ".noclick" + (event.identifier == null ? "" : "-" + event.identifier),
+      view = select(event.sourceEvent.view),
+      start = event.on("drag" + name, function() { start.on("drag" + name, null).on("end" + name, end); });
+  function end() { view.on("click" + name, nodefault, true); setTimeout(afterend, 0); }
+  function afterend() { view.on("click" + name, null); }
+}
+
 export default function(started) {
   var x = defaultX,
       y = defaultY,
@@ -47,6 +72,11 @@ export default function(started) {
       listeners = dispatch("start", "drag", "end");
 
   if (started != null) listeners.on("start", started);
+
+  listeners.on("start.nodrag", nodrag);
+  listeners.on("start.noselect", noselect);
+  listeners.on("start.noscroll", noscroll);
+  listeners.on("start.noclick", noclick);
 
   function drag(selection) {
     selection
@@ -95,9 +125,7 @@ export default function(started) {
 
       var sublisteners = listeners.copy(),
           startevent = {type: "start", identifier: id, x: p0[0] + dx, y: p0[1] + dy, on: on},
-          view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
-          context = select(contextify.apply(that, args)).on(name(move), moved).on(name(end), ended),
-          noclick = false;
+          context = select(contextify.apply(that, args)).on(name(move), moved).on(name(end), ended);
 
       customEvent(startevent, sublisteners.apply, sublisteners, ["start", that, args]);
 
@@ -114,21 +142,14 @@ export default function(started) {
       function moved() {
         var p = pointer(parent, id);
         if (p == null) return; // This pointer didn’t change.
-        nodefault(), noclick = true;
         customEvent({type: "drag", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["drag", that, args]);
       }
 
       function ended() {
         var p = pointer(parent, id);
         if (p == null) return; // This pointer didn’t end.
-        view.on(name(), null);
         context.on(name(), null);
-        if (noclick) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
         customEvent({type: "end", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["end", that, args]);
-      }
-
-      function afterended() {
-        view.on(name("click"), null);
       }
     };
   }
