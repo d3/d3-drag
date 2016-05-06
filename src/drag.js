@@ -1,5 +1,5 @@
 import constant from "./constant";
-import noop from "./noop";
+import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
 
 function nodefault() {
@@ -29,13 +29,14 @@ function touchContext() {
   return event.target;
 }
 
-export default function(dragstarted) {
+export default function() {
   var x = null,
       y = null,
       filter = defaultFilter,
       container = defaultContainer,
       mousestart = start("mousemove", "mouseup", mouse, mouseContext),
-      touchstart = start("touchmove", "touchend touchcancel", touch, touchContext);
+      touchstart = start("touchmove", "touchend touchcancel", touch, touchContext),
+      listeners = dispatch("dragstart", "drag", "dragend");
 
   function drag(selection) {
     selection
@@ -53,29 +54,25 @@ export default function(dragstarted) {
     }
   }
 
-  function start(move, end, position, contextify) {
+  function start(move, end, pointer, contextify) {
     return function(that, args, id) {
       var parent,
           p0,
           dx,
           dy;
 
+      // You can’t listen for the beforedragstart event explicitly, but it’s
+      // needed to expose the current identifier to accessors via d3.event.
+
       if (!customEvent({type: "beforedragstart", identifier: id}, function() {
         if (filter.apply(that, args)) {
           parent = container.apply(that, args);
-          p0 = position(parent, id);
+          p0 = pointer(parent, id);
           dx = x == null ? 0 : x.apply(that, args) - p0[0];
           dy = y == null ? 0 : y.apply(that, args) - p0[1];
           return true;
         }
       })) return;
-
-      var listen = customEvent({type: "dragstart", identifier: id, x: p0[0] + dx, y: p0[1] + dy}, dragstarted, that, args) || noop,
-          dragged = typeof listen === "function" ? listen : listen.drag || noop,
-          dragended = listen.dragend || noop,
-          noclick = false,
-          view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
-          context = select(contextify.apply(that, args)).on(name(move), moved).on(name(end), ended);
 
       // I’d like to call preventDefault on mousedown to disable native dragging
       // of links or images and native text selection. However, in Chrome this
@@ -83,30 +80,41 @@ export default function(dragstarted) {
       // https://bugs.chromium.org/p/chromium/issues/detail?id=269917
       // And if you preventDefault on touchstart on iOS, it prevents the click
       // event on touchend, even if there was no touchmove! So instead, we
-      // cancel the specific undesirable behaviors.
+      // cancel the specific undesirable behaviors. If you want to change this
+      // behavior, you can unregister these listeners on dragstart.
+
+      var sublisteners = listeners.copy(),
+          startevent = {type: "dragstart", identifier: id, x: p0[0] + dx, y: p0[1] + dy, on: on},
+          view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
+          context = select(contextify.apply(that, args)).on(name(move), moved).on(name(end), ended),
+          noclick = false;
+
+      customEvent(startevent, sublisteners.apply, sublisteners, ["dragstart", that, args]);
+
+      function on() {
+        var value = sublisteners.on.apply(sublisteners, arguments);
+        return value === sublisteners ? startevent : value;
+      }
 
       function name(types) {
         var name = id == null ? ".drag" : ".drag-" + id;
-        return types == null ? name : types.trim()
-            .split(/^|\s+/)
-            .map(function(type) { return type + name; })
-            .join(" ");
+        return types == null ? name : types.trim().split(/^|\s+/).map(function(type) { return type + name; }).join(" ");
       }
 
       function moved() {
-        var p = position(parent, id);
-        if (p == null) return; // This touch didn’t change.
+        var p = pointer(parent, id);
+        if (p == null) return; // This pointer didn’t change.
         nodefault(), noclick = true;
-        dragged.call(that, p[0] + dx, p[1] + dy);
+        customEvent({type: "drag", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["drag", that, args]);
       }
 
       function ended() {
-        var p = position(parent, id);
-        if (p == null) return; // This touch didn’t end.
+        var p = pointer(parent, id);
+        if (p == null) return; // This pointer didn’t end.
         view.on(name(), null);
         context.on(name(), null);
         if (noclick) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
-        dragended.call(that, p[0] + dx, p[1] + dy);
+        customEvent({type: "dragend", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["dragend", that, args]);
       }
 
       function afterended() {
@@ -129,6 +137,11 @@ export default function(dragstarted) {
 
   drag.y = function(_) {
     return arguments.length ? (y = typeof _ === "function" ? _ : constant(+_), drag) : y;
+  };
+
+  drag.on = function() {
+    var value = listeners.on.apply(listeners, arguments);
+    return value === listeners ? drag : value;
   };
 
   return drag;
