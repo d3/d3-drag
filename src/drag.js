@@ -55,6 +55,11 @@ export default function(dragstarted) {
 
   function start(move, end, position, contextify) {
     return function(that, args, id) {
+      var parent,
+          p0,
+          dx,
+          dy;
+
       if (!customEvent({type: "beforedragstart", identifier: id}, function() {
         if (filter.apply(that, args)) {
           parent = container.apply(that, args);
@@ -65,11 +70,7 @@ export default function(dragstarted) {
         }
       })) return;
 
-      var parent,
-          p0,
-          dx,
-          dy,
-          listen = customEvent({type: "dragstart", identifier: id, x: p0[0], y: p0[1]}, dragstarted, that, args) || noop,
+      var listen = customEvent({type: "dragstart", identifier: id, x: p0[0], y: p0[1]}, dragstarted, that, args) || noop,
           dragged = typeof listen === "function" ? listen : listen.drag || noop,
           dragended = listen.dragend || noop,
           noclick = false,
