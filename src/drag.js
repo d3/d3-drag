@@ -70,7 +70,7 @@ export default function(dragstarted) {
         }
       })) return;
 
-      var listen = customEvent({type: "dragstart", identifier: id, x: p0[0], y: p0[1]}, dragstarted, that, args) || noop,
+      var listen = customEvent({type: "dragstart", identifier: id, x: p0[0] + dx, y: p0[1] + dy}, dragstarted, that, args) || noop,
           dragged = typeof listen === "function" ? listen : listen.drag || noop,
           dragended = listen.dragend || noop,
           noclick = false,
