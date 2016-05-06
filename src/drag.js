@@ -68,15 +68,15 @@ export default function(started) {
       filter = defaultFilter,
       container = defaultContainer,
       mousestart = start("mousemove", "mouseup", mouse, mouseContext),
-      touchstart = start("touchmove", "touchend touchcancel", touch, touchContext),
-      listeners = dispatch("start", "drag", "end");
+      touchstart = start("touchmove", "touchend touchcancel", touch, touchContext);
+
+  var listeners = dispatch("start", "drag", "end")
+      .on("start.nodrag", nodrag)
+      .on("start.noselect", noselect)
+      .on("start.noscroll", noscroll)
+      .on("start.noclick", noclick);
 
   if (started != null) listeners.on("start", started);
-
-  listeners.on("start.nodrag", nodrag);
-  listeners.on("start.noselect", noselect);
-  listeners.on("start.noscroll", noscroll);
-  listeners.on("start.noclick", noclick);
 
   function drag(selection) {
     selection
