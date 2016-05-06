@@ -30,7 +30,9 @@ function touchContext() {
 }
 
 export default function(dragstarted) {
-  var filter = defaultFilter,
+  var x = null,
+      y = null,
+      filter = defaultFilter,
       container = defaultContainer,
       mousestart = start("mousemove", "mouseup", mouse, mouseContext),
       touchstart = start("touchmove", "touchend touchcancel", touch, touchContext);
@@ -56,13 +58,18 @@ export default function(dragstarted) {
       if (!customEvent({type: "beforedragstart", identifier: id}, function() {
         if (filter.apply(that, args)) {
           parent = container.apply(that, args);
+          p0 = position(parent, id);
+          dx = x == null ? 0 : x.apply(that, args) - p0[0];
+          dy = y == null ? 0 : y.apply(that, args) - p0[1];
           return true;
         }
       })) return;
 
       var parent,
-          point = position(parent, id),
-          listen = customEvent({type: "dragstart", identifier: id, x: point[0], y: point[1]}, dragstarted, that, args) || noop,
+          p0,
+          dx,
+          dy,
+          listen = customEvent({type: "dragstart", identifier: id, x: p0[0], y: p0[1]}, dragstarted, that, args) || noop,
           dragged = typeof listen === "function" ? listen : listen.drag || noop,
           dragended = listen.dragend || noop,
           noclick = false,
@@ -89,7 +96,7 @@ export default function(dragstarted) {
         var p = position(parent, id);
         if (p == null) return; // This touch didn’t change.
         nodefault(), noclick = true;
-        dragged.call(that, p[0], p[1], id);
+        dragged.call(that, p[0] + dx, p[1] + dy, id);
       }
 
       function ended() {
@@ -98,7 +105,7 @@ export default function(dragstarted) {
         view.on(name(), null);
         context.on(name(), null);
         if (noclick) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
-        dragended.call(that, p[0], p[1], id);
+        dragended.call(that, p[0] + dx, p[1] + dy, id);
       }
 
       function afterended() {
@@ -113,6 +120,14 @@ export default function(dragstarted) {
 
   drag.container = function(_) {
     return arguments.length ? (container = typeof _ === "function" ? _ : constant(_), drag) : container;
+  };
+
+  drag.x = function(_) {
+    return arguments.length ? (x = typeof _ === "function" ? _ : constant(+_), drag) : x;
+  };
+
+  drag.y = function(_) {
+    return arguments.length ? (y = typeof _ === "function" ? _ : constant(+_), drag) : y;
   };
 
   return drag;
