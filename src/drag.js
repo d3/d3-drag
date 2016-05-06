@@ -83,9 +83,8 @@ export default function(started) {
       .on("start.nodrag", nodrag)
       .on("start.noselect", noselect)
       .on("start.noscroll", noscroll)
-      .on("start.noclick", noclick);
-
-  if (started != null) listeners.on("start", started);
+      .on("start.noclick", noclick)
+      .on("start", started);
 
   function drag(selection) {
     selection
