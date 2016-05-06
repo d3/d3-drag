@@ -36,7 +36,7 @@ export default function() {
       container = defaultContainer,
       mousestart = start("mousemove", "mouseup", mouse, mouseContext),
       touchstart = start("touchmove", "touchend touchcancel", touch, touchContext),
-      listeners = dispatch("dragstart", "drag", "dragend");
+      listeners = dispatch("start", "drag", "end");
 
   function drag(selection) {
     selection
@@ -61,10 +61,10 @@ export default function() {
           dx,
           dy;
 
-      // You can’t listen for the beforedragstart event explicitly, but it’s
+      // You can’t listen for the beforestart event explicitly, but it’s
       // needed to expose the current identifier to accessors via d3.event.
 
-      if (!customEvent({type: "beforedragstart", identifier: id}, function() {
+      if (!customEvent({type: "beforestart", identifier: id}, function() {
         if (filter.apply(that, args)) {
           parent = container.apply(that, args);
           p0 = pointer(parent, id);
@@ -81,15 +81,15 @@ export default function() {
       // And if you preventDefault on touchstart on iOS, it prevents the click
       // event on touchend, even if there was no touchmove! So instead, we
       // cancel the specific undesirable behaviors. If you want to change this
-      // behavior, you can unregister these listeners on dragstart.
+      // behavior, you can unregister these listeners on start.
 
       var sublisteners = listeners.copy(),
-          startevent = {type: "dragstart", identifier: id, x: p0[0] + dx, y: p0[1] + dy, on: on},
+          startevent = {type: "start", identifier: id, x: p0[0] + dx, y: p0[1] + dy, on: on},
           view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
           context = select(contextify.apply(that, args)).on(name(move), moved).on(name(end), ended),
           noclick = false;
 
-      customEvent(startevent, sublisteners.apply, sublisteners, ["dragstart", that, args]);
+      customEvent(startevent, sublisteners.apply, sublisteners, ["start", that, args]);
 
       function on() {
         var value = sublisteners.on.apply(sublisteners, arguments);
@@ -114,7 +114,7 @@ export default function() {
         view.on(name(), null);
         context.on(name(), null);
         if (noclick) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
-        customEvent({type: "dragend", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["dragend", that, args]);
+        customEvent({type: "end", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["end", that, args]);
       }
 
       function afterended() {
