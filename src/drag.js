@@ -6,6 +6,14 @@ function nodefault() {
   event.preventDefault();
 }
 
+function defaultX(d) {
+  return d && d.x;
+}
+
+function defaultY(d) {
+  return d && d.y;
+}
+
 // Ignore right-click, since that should open the context menu.
 // Ignore multiple starting touches on the same element.
 function defaultFilter() {
@@ -29,15 +37,7 @@ function touchContext() {
   return event.target;
 }
 
-function defaultX(d) {
-  return d && d.x;
-}
-
-function defaultY(d) {
-  return d && d.y;
-}
-
-export default function() {
+export default function(started) {
   var x = defaultX,
       y = defaultY,
       filter = defaultFilter,
@@ -45,6 +45,8 @@ export default function() {
       mousestart = start("mousemove", "mouseup", mouse, mouseContext),
       touchstart = start("touchmove", "touchend touchcancel", touch, touchContext),
       listeners = dispatch("start", "drag", "end");
+
+  if (started != null) listeners.on("start", started);
 
   function drag(selection) {
     selection
