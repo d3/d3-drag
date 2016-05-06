@@ -5,6 +5,11 @@ function nodefault() {
   event.preventDefault();
 }
 
+// Ignore right-click by default, since that should open the context menu.
+function mainbutton() {
+  return !event.button;
+}
+
 function mouseId() {
   return null;
 }
@@ -30,7 +35,8 @@ function touchContext() {
 export default function() {
   var listeners = dispatch("dragstart", "drag", "dragend"),
       mousestarted = started("mousemove", "mouseup", mouse, mouseId, mouseContext),
-      touchstarted = started("touchmove", "touchend touchcancel", touch, touchId, touchContext);
+      touchstarted = started("touchmove", "touchend touchcancel", touch, touchId, touchContext),
+      filter = mainbutton;
 
   function drag(selection) {
     selection
@@ -40,6 +46,8 @@ export default function() {
 
   function started(move, end, position, identify, contextify) {
     return function(d, i, nodes) {
+      if (!filter()) return;
+
       var id = identify(),
           node = this,
           parent = node.parentNode,
@@ -97,6 +105,10 @@ export default function() {
   drag.on = function() {
     var value = listeners.on.apply(listeners, arguments);
     return value === listeners ? drag : value;
+  };
+
+  drag.filter = function(_) {
+    return arguments.length ? (filter = _, drag) : filter;
   };
 
   return drag;
