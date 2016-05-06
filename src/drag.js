@@ -29,9 +29,17 @@ function touchContext() {
   return event.target;
 }
 
+function defaultX(d) {
+  return d && d.x;
+}
+
+function defaultY(d) {
+  return d && d.y;
+}
+
 export default function() {
-  var x = null,
-      y = null,
+  var x = defaultX,
+      y = defaultY,
       filter = defaultFilter,
       container = defaultContainer,
       mousestart = start("mousemove", "mouseup", mouse, mouseContext),
@@ -68,8 +76,8 @@ export default function() {
         if (filter.apply(that, args)) {
           parent = container.apply(that, args);
           p0 = pointer(parent, id);
-          dx = x == null ? 0 : x.apply(that, args) - p0[0];
-          dy = y == null ? 0 : y.apply(that, args) - p0[1];
+          dx = x.apply(that, args) - p0[0] || 0;
+          dy = y.apply(that, args) - p0[1] || 0;
           return true;
         }
       })) return;
