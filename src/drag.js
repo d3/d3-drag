@@ -1,6 +1,6 @@
 import constant from "./constant";
 import noop from "./noop";
-import {event, select, mouse, touch} from "d3-selection";
+import {event, customEvent, select, mouse, touch} from "d3-selection";
 
 function nodefault() {
   event.preventDefault();
@@ -8,8 +8,10 @@ function nodefault() {
 
 // Ignore right-click, since that should open the context menu.
 // Ignore multiple starting touches on the same element.
-function defaultFilter(id) {
-  return !event.button && (id == null || event.changedTouches[0].identifier === id);
+function defaultFilter() {
+  return event.identifier == null
+      ? !event.sourceEvent.button
+      : event.sourceEvent.changedTouches[0].identifier === event.identifier;
 }
 
 function defaultContainer() {
@@ -40,30 +42,32 @@ export default function(dragstarted) {
   }
 
   function mousedowned() {
-    if (filter.call(this)) {
-      mousestart.call(this);
-    }
+    mousestart(this, arguments);
   }
 
   function touchstarted() {
-    for (var touches = event.changedTouches, i = 0, n = touches.length, id; i < n; ++i) {
-      if (filter.call(this, id = touches[i].identifier)) {
-        touchstart.call(this, id);
-      }
+    for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
+      touchstart(this, arguments, touches[i].identifier);
     }
   }
 
   function start(move, end, position, contextify) {
-    return function(id) {
-      var node = this,
-          parent = container.call(node, id),
-          p0 = position(parent, id),
-          listen = dragstarted.call(node, p0[0], p0[1], id) || noop,
+    return function(that, args, id) {
+      if (!customEvent({type: "beforedragstart", identifier: id}, function() {
+        if (filter.apply(that, args)) {
+          parent = container.apply(that, args);
+          return true;
+        }
+      })) return;
+
+      var parent,
+          point = position(parent, id),
+          listen = customEvent({type: "dragstart", identifier: id, x: point[0], y: point[1]}, dragstarted, that, args) || noop,
           dragged = typeof listen === "function" ? listen : listen.drag || noop,
           dragended = listen.dragend || noop,
           noclick = false,
           view = select(event.view).on(name("dragstart selectstart"), nodefault, true),
-          context = select(contextify()).on(name(move), moved).on(name(end), ended);
+          context = select(contextify.apply(that, args)).on(name(move), moved).on(name(end), ended);
 
       // I’d like to call preventDefault on mousedown to disable native dragging
       // of links or images and native text selection. However, in Chrome this
@@ -85,7 +89,7 @@ export default function(dragstarted) {
         var p = position(parent, id);
         if (p == null) return; // This touch didn’t change.
         nodefault(), noclick = true;
-        dragged.call(node, p[0], p[1], id);
+        dragged.call(that, p[0], p[1], id);
       }
 
       function ended() {
@@ -94,7 +98,7 @@ export default function(dragstarted) {
         view.on(name(), null);
         context.on(name(), null);
         if (noclick) view.on(name("click"), nodefault, true), setTimeout(afterended, 0);
-        dragended.call(node, p[0], p[1], id);
+        dragended.call(that, p[0], p[1], id);
       }
 
       function afterended() {
