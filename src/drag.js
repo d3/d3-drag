@@ -44,8 +44,11 @@ function noclick() {
   var name = ".noclick-" + event.identifier,
       view = select(event.sourceEvent.view),
       start = event.on("drag" + name, function() { start.on("drag" + name, null).on("end" + name, end); });
-  function end() { view.on("click" + name, nodefault, true); setTimeout(afterend, 0); }
-  function afterend() { view.on("click" + name, null); }
+
+  function end() {
+    view.on("click" + name, nodefault, true);
+    setTimeout(function() { view.on("click" + name, null); }, 0);
+  }
 }
 
 export default function(started) {
@@ -81,80 +84,81 @@ export default function(started) {
   }
 
   function mousedowned() {
-    if (!start("mouse", {point: mouse, that: this, args: arguments})) return;
+    if (!start("mouse", mouse, this, arguments)) return;
     select(event.view).on("mousemove.drag", mousemoved).on("mouseup.drag", mouseupped);
   }
 
   function mousemoved() {
-    move("drag", "mouse");
+    active.mouse("drag");
   }
 
   function mouseupped() {
-    move("end", "mouse");
+    active.mouse("end");
     select(event.view).on("mousemove.drag mouseup.drag", null);
     delete active.mouse;
   }
 
   function touchstarted() {
     for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
-      start(touches[i].identifier, {point: touch, that: this, args: arguments});
+      start(touches[i].identifier, touch, this, arguments);
     }
   }
 
   function touchmoved() {
-    for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
-      move("drag", touches[i].identifier);
+    for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
+      if (t = active[touches[i].identifier]) {
+        t("drag");
+      }
     }
   }
 
   function touchended() {
-    for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
-      move("end", touches[i].identifier);
+    for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
+      if (t = active[touches[i].identifier]) {
+        t("end");
+        delete active[touches[i].identifier];
+      }
     }
   }
 
-  function start(id, state) {
-    var startevent, p0;
+  function start(id, point, that, args) {
 
     if (!customEvent({type: "beforestart", identifier: id}, function() {
-      if (filter.apply(state.that, state.args)) {
-        p0 = state.point(state.parent = container.apply(state.that, state.args), id);
-        state.dx = x.apply(state.that, state.args) - p0[0] || 0;
-        state.dy = y.apply(state.that, state.args) - p0[1] || 0;
+      if (filter.apply(that, args)) {
+        parent = container.apply(that, args);
         return true;
       }
     })) return false;
 
-    state.listeners = listeners.copy();
+    var parent,
+        startevent,
+        sublisteners = listeners.copy(),
+        p0 = point(parent, id),
+        dx = x.apply(that, args) - p0[0] || 0,
+        dy = y.apply(that, args) - p0[1] || 0;
+
+    active[id] = function(type) {
+      var p1 = point(parent, id);
+      customEvent({
+        type: type,
+        identifier: id,
+        x: p1[0] + dx,
+        y: p1[1] + dy
+      }, sublisteners.apply, sublisteners, [type, that, args]);
+    };
 
     customEvent(startevent = {
       type: "start",
       identifier: id,
-      x: p0[0] + state.dx,
-      y: p0[1] + state.dy,
+      x: p0[0] + dx,
+      y: p0[1] + dy,
       on: on
-    }, state.listeners.apply, state.listeners, ["start", state.that, state.args]);
-
-    active[id] = state;
+    }, sublisteners.apply, sublisteners, ["start", that, args]);
 
     function on() {
-      var value = state.listeners.on.apply(state.listeners, arguments);
-      return value === state.listeners ? startevent : value;
+      var value = sublisteners.on.apply(sublisteners, arguments);
+      return value === sublisteners ? startevent : value;
     }
-
-    return true;
-  }
-
-  function move(type, id) {
-    if (!(state = active[id])) return false; // Ignoring this pointer.
-    var state, p = state.point(state.parent, id);
-
-    customEvent({
-      type: type,
-      identifier: id,
-      x: p[0] + state.dx,
-      y: p[1] + state.dy
-    }, state.listeners.apply, state.listeners, [type, state.that, state.args]);
 
     return true;
   }
