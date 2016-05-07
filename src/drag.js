@@ -76,7 +76,8 @@ export default function(started) {
         .on("mousedown.drag", mousedowned)
         .on("touchstart.drag", touchstarted)
         .on("touchmove.drag", touchmoved)
-        .on("touchend.drag touchcancel.drag", touchended);
+        .on("touchend.drag touchcancel.drag", touchended)
+        .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
   }
 
   function mousedowned() {
