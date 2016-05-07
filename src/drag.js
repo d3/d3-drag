@@ -15,47 +15,33 @@ function defaultY(d) {
 }
 
 // Ignore right-click, since that should open the context menu.
-// Ignore multiple starting touches on the same element.
 function defaultFilter() {
-  return event.identifier == null
-      ? !event.sourceEvent.button
-      : event.sourceEvent.changedTouches[0].identifier === event.identifier;
+  return !event.sourceEvent.button;
 }
 
 function defaultContainer() {
   return this.parentNode;
 }
 
-// Listen to the window for mousemove and mouseup such that we continue to
-// receive events if the mouse goes outside the window.
-function mouseContext() {
-  return event.view;
-}
-
-// Listen to the event target for touchmove, touchend and touchcancel.
-function touchContext() {
-  return event.target;
-}
-
 function nodrag() {
-  var name = ".nodrag" + (event.identifier == null ? "" : "-" + event.identifier),
+  var name = ".nodrag-" + event.identifier,
       view = select(event.sourceEvent.view).on("dragstart" + name, nodefault, true);
   event.on("end" + name, function() { view.on("dragstart" + name, null); });
 }
 
 function noselect() {
-  var name = ".noselect" + (event.identifier == null ? "" : "-" + event.identifier),
+  var name = ".noselect-" + event.identifier,
       view = select(event.sourceEvent.view).on("selectstart" + name, nodefault, true);
   event.on("end" + name, function() { view.on("selectstart" + name, null); });
 }
 
 function noscroll() {
-  var name = ".noscroll" + (event.identifier == null ? "" : "-" + event.identifier);
+  var name = ".noscroll-" + event.identifier;
   event.on("drag" + name, function() { event.sourceEvent.preventDefault(); });
 }
 
 function noclick() {
-  var name = ".noclick" + (event.identifier == null ? "" : "-" + event.identifier),
+  var name = ".noclick-" + event.identifier,
       view = select(event.sourceEvent.view),
       start = event.on("drag" + name, function() { start.on("drag" + name, null).on("end" + name, end); });
   function end() { view.on("click" + name, nodefault, true); setTimeout(afterend, 0); }
@@ -67,8 +53,7 @@ export default function(started) {
       y = defaultY,
       filter = defaultFilter,
       container = defaultContainer,
-      mousestart = start("mousemove", "mouseup", mouse, mouseContext),
-      touchstart = start("touchmove", "touchend touchcancel", touch, touchContext);
+      active = {};
 
   // I’d like to call preventDefault on mousedown to disable native dragging
   // of links or images and native text selection. However, in Chrome this
@@ -89,68 +74,88 @@ export default function(started) {
   function drag(selection) {
     selection
         .on("mousedown.drag", mousedowned)
-        .on("touchstart.drag", touchstarted);
+        .on("touchstart.drag", touchstarted)
+        .on("touchmove.drag", touchmoved)
+        .on("touchend.drag touchcancel.drag", touchended);
   }
 
   function mousedowned() {
-    mousestart(this, arguments);
+    if (!start("mouse", {point: mouse, that: this, args: arguments})) return;
+    select(event.view).on("mousemove.drag", mousemoved).on("mouseup.drag", mouseupped);
+  }
+
+  function mousemoved() {
+    move("drag", "mouse");
+  }
+
+  function mouseupped() {
+    move("end", "mouse");
+    select(event.view).on("mousemove.drag mouseup.drag", null);
+    delete active.mouse;
   }
 
   function touchstarted() {
     for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
-      touchstart(this, arguments, touches[i].identifier);
+      start(touches[i].identifier, {point: touch, that: this, args: arguments});
     }
   }
 
-  function start(move, end, pointer, contextify) {
-    return function(that, args, id) {
-      var parent,
-          p0,
-          dx,
-          dy;
+  function touchmoved() {
+    for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
+      move("drag", touches[i].identifier);
+    }
+  }
 
-      // You can’t listen for the beforestart event explicitly, but it’s
-      // needed to expose the current identifier to accessors via d3.event.
+  function touchended() {
+    for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
+      move("end", touches[i].identifier);
+    }
+  }
 
-      if (!customEvent({type: "beforestart", identifier: id}, function() {
-        if (filter.apply(that, args)) {
-          parent = container.apply(that, args);
-          p0 = pointer(parent, id);
-          dx = x.apply(that, args) - p0[0] || 0;
-          dy = y.apply(that, args) - p0[1] || 0;
-          return true;
-        }
-      })) return;
+  function start(id, state) {
+    var startevent, p0;
 
-      var sublisteners = listeners.copy(),
-          startevent = {type: "start", identifier: id, x: p0[0] + dx, y: p0[1] + dy, on: on},
-          context = select(contextify.apply(that, args)).on(name(move), moved).on(name(end), ended);
-
-      customEvent(startevent, sublisteners.apply, sublisteners, ["start", that, args]);
-
-      function on() {
-        var value = sublisteners.on.apply(sublisteners, arguments);
-        return value === sublisteners ? startevent : value;
+    if (!customEvent({type: "beforestart", identifier: id}, function() {
+      if (filter.apply(state.that, state.args)) {
+        p0 = state.point(state.parent = container.apply(state.that, state.args), id);
+        state.dx = x.apply(state.that, state.args) - p0[0] || 0;
+        state.dy = y.apply(state.that, state.args) - p0[1] || 0;
+        return true;
       }
+    })) return false;
 
-      function name(types) {
-        var name = id == null ? ".drag" : ".drag-" + id;
-        return types == null ? name : types.trim().split(/^|\s+/).map(function(type) { return type + name; }).join(" ");
-      }
+    state.listeners = listeners.copy();
 
-      function moved() {
-        var p = pointer(parent, id);
-        if (p == null) return; // This pointer didn’t change.
-        customEvent({type: "drag", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["drag", that, args]);
-      }
+    customEvent(startevent = {
+      type: "start",
+      identifier: id,
+      x: p0[0] + state.dx,
+      y: p0[1] + state.dy,
+      on: on
+    }, state.listeners.apply, state.listeners, ["start", state.that, state.args]);
 
-      function ended() {
-        var p = pointer(parent, id);
-        if (p == null) return; // This pointer didn’t end.
-        context.on(name(), null);
-        customEvent({type: "end", x: p[0] + dx, y: p[1] + dy, identifier: id}, sublisteners.apply, sublisteners, ["end", that, args]);
-      }
-    };
+    active[id] = state;
+
+    function on() {
+      var value = state.listeners.on.apply(state.listeners, arguments);
+      return value === state.listeners ? startevent : value;
+    }
+
+    return true;
+  }
+
+  function move(type, id) {
+    if (!(state = active[id])) return false; // Ignoring this pointer.
+    var state, p = state.point(state.parent, id);
+
+    customEvent({
+      type: type,
+      identifier: id,
+      x: p[0] + state.dx,
+      y: p[1] + state.dy
+    }, state.listeners.apply, state.listeners, [type, state.that, state.args]);
+
+    return true;
   }
 
   drag.filter = function(_) {
