@@ -93,9 +93,10 @@ export default function(started) {
   }
 
   function mouseupped() {
-    active.mouse("end");
+    var m = active.mouse;
     select(event.view).on("mousemove.drag mouseup.drag", null);
     delete active.mouse;
+    m("end");
   }
 
   function touchstarted() {
@@ -115,8 +116,8 @@ export default function(started) {
   function touchended() {
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
       if (t = active[touches[i].identifier]) {
-        t("end");
         delete active[touches[i].identifier];
+        t("end");
       }
     }
   }
