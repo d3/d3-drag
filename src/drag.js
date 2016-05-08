@@ -51,6 +51,19 @@ function noclick() {
   }
 }
 
+function DragEvent(type, id, x, y, dispatch) {
+  this.type = type;
+  this.identifier = id;
+  this.x = x;
+  this.y = y;
+  this._ = dispatch;
+}
+
+DragEvent.prototype.on = function() {
+  var value = this._.on.apply(this._, arguments);
+  return value === this._ ? this : value;
+};
+
 export default function(started) {
   var x = defaultX,
       y = defaultY,
@@ -132,34 +145,15 @@ export default function(started) {
     })) return false;
 
     var parent,
-        startevent,
         sublisteners = listeners.copy(),
         p0 = point(parent, id),
         dx = x.apply(that, args) - p0[0] || 0,
         dy = y.apply(that, args) - p0[1] || 0;
 
-    active[id] = function(type) {
-      var p1 = point(parent, id);
-      customEvent({
-        type: type,
-        identifier: id,
-        x: p1[0] + dx,
-        y: p1[1] + dy
-      }, sublisteners.apply, sublisteners, [type, that, args]);
-    };
-
-    customEvent(startevent = {
-      type: "start",
-      identifier: id,
-      x: p0[0] + dx,
-      y: p0[1] + dy,
-      on: on
-    }, sublisteners.apply, sublisteners, ["start", that, args]);
-
-    function on() {
-      var value = sublisteners.on.apply(sublisteners, arguments);
-      return value === sublisteners ? startevent : value;
-    }
+    (active[id] = function(type, p) {
+      if (p == null) p = point(parent, id);
+      customEvent(new DragEvent(type, id, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
+    })("start", p0);
 
     return true;
   }
