@@ -3,6 +3,8 @@ import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
 import DragEvent from "./event";
 
+var ignore = {};
+
 function nodefault() {
   event.preventDefault();
 }
@@ -123,14 +125,12 @@ export default function(started) {
     }
   }
 
-  function start(id, point, that, args) {
+  function beforestart() {
+    return filter.apply(this, arguments) ? container.apply(this, arguments) : ignore;
+  }
 
-    if (!customEvent({type: "beforestart", identifier: id}, function() {
-      if (filter.apply(that, args)) {
-        parent = container.apply(that, args);
-        return true;
-      }
-    })) return false;
+  function start(id, point, that, args) {
+    if ((parent = customEvent(new DragEvent("beforestart", id), beforestart, that, args)) === ignore) return false;
 
     var parent,
         sublisteners = listeners.copy(),
