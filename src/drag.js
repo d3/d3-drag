@@ -27,7 +27,7 @@ function defaultContainer() {
 }
 
 function nodrag() {
-  select(event.sourceEvent.view).on("dragstart.nodrag-" + event.identifier, nodefault, true);
+  select(event.on("end.nodrag", yesdrag).sourceEvent.view).on("dragstart.nodrag-" + event.identifier, nodefault, true);
 }
 
 function yesdrag() {
@@ -35,7 +35,7 @@ function yesdrag() {
 }
 
 function noselect() {
-  select(event.sourceEvent.view).on("selectstart.noselect-" + event.identifier, nodefault, true);
+  select(event.on("end.noselect", yesselect).sourceEvent.view).on("selectstart.noselect-" + event.identifier, nodefault, true);
 }
 
 function yesselect() {
@@ -71,9 +71,7 @@ export default function(started) {
       .on("start.noselect", noselect)
       .on("start", started)
       .on("drag.noclick", noclick)
-      .on("drag.noscroll", nodefault)
-      .on("end.nodrag", yesdrag)
-      .on("end.noselect", yesselect);
+      .on("drag.noscroll", nodefault);
 
   function drag(selection) {
     selection
