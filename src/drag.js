@@ -2,12 +2,12 @@ import constant from "./constant";
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
 import DragEvent from "./event";
+import noclick from "./noclick";
+import nodefault from "./nodefault";
+import nodrag from "./nodrag";
+import noselect from "./noselect";
 
 var ignore = {};
-
-function nodefault() {
-  event.preventDefault();
-}
 
 function defaultX(d) {
   return d && d.x;
@@ -24,30 +24,6 @@ function defaultFilter() {
 
 function defaultContainer() {
   return this.parentNode;
-}
-
-function nodrag() {
-  select(event.on("end.nodrag", yesdrag).sourceEvent.view).on("dragstart.nodrag-" + event.identifier, nodefault, true);
-}
-
-function yesdrag() {
-  select(event.sourceEvent.view).on("dragstart.nodrag-" + event.identifier, null);
-}
-
-function noselect() {
-  select(event.on("end.noselect", yesselect).sourceEvent.view).on("selectstart.noselect-" + event.identifier, nodefault, true);
-}
-
-function yesselect() {
-  select(event.sourceEvent.view).on("selectstart.noselect-" + event.identifier, null);
-}
-
-function noclick() {
-  event.on("drag.noclick", null).on("end.noclick", function() {
-    var click = "click.noclick-" + event.identifier,
-        view = select(event.sourceEvent.view).on(click, nodefault, true);
-    setTimeout(function() { view.on(click, null); }, 0);
-  });
 }
 
 export default function(started) {
