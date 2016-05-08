@@ -72,8 +72,8 @@ export default function(started) {
       .on("start", started)
       .on("drag.noclick", noclick)
       .on("drag.noscroll", nodefault)
-      .on("end.noselect", yesselect)
-      .on("end.nodrag", yesdrag);
+      .on("end.nodrag", yesdrag)
+      .on("end.noselect", yesselect);
 
   function drag(selection) {
     selection
