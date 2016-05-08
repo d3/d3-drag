@@ -27,31 +27,27 @@ function defaultContainer() {
 }
 
 function nodrag() {
-  var name = ".nodrag-" + event.identifier,
-      view = select(event.sourceEvent.view).on("dragstart" + name, nodefault, true);
-  event.on("end" + name, function() { view.on("dragstart" + name, null); });
+  select(event.sourceEvent.view).on("dragstart.nodrag-" + event.identifier, nodefault, true);
+}
+
+function yesdrag() {
+  select(event.sourceEvent.view).on("dragstart.nodrag-" + event.identifier, null);
 }
 
 function noselect() {
-  var name = ".noselect-" + event.identifier,
-      view = select(event.sourceEvent.view).on("selectstart" + name, nodefault, true);
-  event.on("end" + name, function() { view.on("selectstart" + name, null); });
+  select(event.sourceEvent.view).on("selectstart.noselect-" + event.identifier, nodefault, true);
 }
 
-function noscroll() {
-  var name = ".noscroll-" + event.identifier;
-  event.on("drag" + name, function() { event.sourceEvent.preventDefault(); });
+function yesselect() {
+  select(event.sourceEvent.view).on("selectstart.noselect-" + event.identifier, null);
 }
 
 function noclick() {
-  var name = ".noclick-" + event.identifier,
-      view = select(event.sourceEvent.view),
-      start = event.on("drag" + name, function() { start.on("drag" + name, null).on("end" + name, end); });
-
-  function end() {
-    view.on("click" + name, nodefault, true);
-    setTimeout(function() { view.on("click" + name, null); }, 0);
-  }
+  event.on("drag.noclick", null).on("end.noclick", function() {
+    var click = "click.noclick-" + event.identifier,
+        view = select(event.sourceEvent.view).on(click, nodefault, true);
+    setTimeout(function() { view.on(click, null); }, 0);
+  });
 }
 
 export default function(started) {
@@ -73,9 +69,11 @@ export default function(started) {
   var listeners = dispatch("start", "drag", "end")
       .on("start.nodrag", nodrag)
       .on("start.noselect", noselect)
-      .on("start.noscroll", noscroll)
-      .on("start.noclick", noclick)
-      .on("start", started);
+      .on("start", started)
+      .on("drag.noclick", noclick)
+      .on("drag.noscroll", nodefault)
+      .on("end.noselect", yesselect)
+      .on("end.nodrag", yesdrag);
 
   function drag(selection) {
     selection
