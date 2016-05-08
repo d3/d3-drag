@@ -1,6 +1,7 @@
 import constant from "./constant";
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
+import DragEvent from "./event";
 
 function nodefault() {
   event.preventDefault();
@@ -50,19 +51,6 @@ function noclick() {
     setTimeout(function() { view.on("click" + name, null); }, 0);
   }
 }
-
-function DragEvent(type, id, x, y, dispatch) {
-  this.type = type;
-  this.identifier = id;
-  this.x = x;
-  this.y = y;
-  this._ = dispatch;
-}
-
-DragEvent.prototype.on = function() {
-  var value = this._.on.apply(this._, arguments);
-  return value === this._ ? this : value;
-};
 
 export default function(started) {
   var x = defaultX,
