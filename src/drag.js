@@ -7,29 +7,27 @@ import noclick from "./noclick";
 import nodrag from "./nodrag";
 import noselect from "./noselect";
 
-var ignore = {};
-
 function defaultX(d) {
-  return d && d.x;
+  return (d == null ? event.subject : d).x;
 }
 
 function defaultY(d) {
-  return d && d.y;
+  return (d == null ? event.subject : d).y;
 }
 
 // Ignore right-click, since that should open the context menu.
-function defaultFilter() {
-  return !event.sourceEvent.button;
+function defaultSubject() {
+  return event.sourceEvent.button ? null : this;
 }
 
 function defaultContainer() {
   return this.parentNode;
 }
 
-export default function(started) {
+export default function() {
   var x = defaultX,
       y = defaultY,
-      filter = defaultFilter,
+      subject = defaultSubject,
       container = defaultContainer,
       active = {};
 
@@ -45,7 +43,6 @@ export default function(started) {
   var listeners = dispatch("start", "drag", "end")
       .on("start.nodrag", nodrag)
       .on("start.noselect", noselect)
-      .on("start", started)
       .on("drag.noclick", noclick)
       .on("drag.noscroll", cancel);
 
@@ -59,7 +56,8 @@ export default function(started) {
   }
 
   function mousedowned() {
-    if (!start("mouse", mouse, this, arguments)) return;
+    var parent = container.apply(this, arguments);
+    if (!start("mouse", parent, mouse, this, arguments)) return;
     select(event.view).on("mousemove.drag", mousemoved).on("mouseup.drag", mouseupped);
   }
 
@@ -75,8 +73,9 @@ export default function(started) {
   }
 
   function touchstarted() {
+    var parent = container.apply(this, arguments);
     for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
-      start(touches[i].identifier, touch, this, arguments);
+      start(touches[i].identifier, parent, touch, this, arguments);
     }
   }
 
@@ -97,29 +96,29 @@ export default function(started) {
     }
   }
 
-  function beforestart() {
-    return filter.apply(this, arguments) ? container.apply(this, arguments) : ignore;
-  }
-
-  function start(id, point, that, args) {
-    if ((parent = customEvent(new DragEvent("beforestart", id), beforestart, that, args)) === ignore) return false;
-
-    var parent,
+  function start(id, parent, point, that, args) {
+    var p0 = point(parent, id), dx, dy,
         sublisteners = listeners.copy(),
-        p0 = point(parent, id),
-        dx = x.apply(that, args) - p0[0] || 0,
-        dy = y.apply(that, args) - p0[1] || 0;
+        node;
+
+    if (!customEvent(new DragEvent("beforestart", node, id, p0[0], p0[1], sublisteners), function() {
+      node = event.subject = subject.apply(that, args);
+      if (node == null) return false;
+      dx = x.apply(that, args) - p0[0] || 0;
+      dy = y.apply(that, args) - p0[1] || 0;
+      return true;
+    })) return false;
 
     (active[id] = function(type, p) {
       if (p == null) p = point(parent, id);
-      customEvent(new DragEvent(type, id, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
+      customEvent(new DragEvent(type, node, id, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
     })("start", p0);
 
     return true;
   }
 
-  drag.filter = function(_) {
-    return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), drag) : filter;
+  drag.subject = function(_) {
+    return arguments.length ? (subject = typeof _ === "function" ? _ : constant(_), drag) : subject;
   };
 
   drag.container = function(_) {
