@@ -1,9 +1,9 @@
-import constant from "./constant";
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
+import cancel from "./cancel";
+import constant from "./constant";
 import DragEvent from "./event";
 import noclick from "./noclick";
-import nodefault from "./nodefault";
 import nodrag from "./nodrag";
 import noselect from "./noselect";
 
@@ -47,7 +47,7 @@ export default function(started) {
       .on("start.noselect", noselect)
       .on("start", started)
       .on("drag.noclick", noclick)
-      .on("drag.noscroll", nodefault);
+      .on("drag.noscroll", cancel);
 
   function drag(selection) {
     selection
