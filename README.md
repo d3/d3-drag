@@ -112,7 +112,7 @@ The subject of a drag gesture may not be changed after the gesture starts. The s
 
 <a href="#drag_x" name="drag_x">#</a> <i>drag</i>.<b>x</b>([<i>x</i>])
 
-…
+If *x* is specified, sets the *x*-position accessor to the specified function and returns the drag behavior. If *x* is not specified, returns the current *x*-accessor, which defaults to:
 
 ```js
 function x() {
@@ -120,15 +120,19 @@ function x() {
 }
 ```
 
+The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the new position of the subject (*event*.x and *event*.y) and the pointer can be maintained during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
+
 <a href="#drag_y" name="drag_y">#</a> <i>drag</i>.<b>y</b>([<i>y</i>])
 
-…
+If *y* is specified, sets the *y*-position accessor to the specified function and returns the drag behavior. If *y* is not specified, returns the current *y*-accessor, which defaults to:
 
 ```js
 function y() {
   return d3.event.subject.y;
 }
 ```
+
+The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the new position of the subject (*event*.x and *event*.y) and the pointer can be maintained during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
 
 <a href="#drag_on" name="drag_on">#</a> <i>drag</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>])
 
