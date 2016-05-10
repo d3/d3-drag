@@ -61,7 +61,7 @@ The *subject* of a drag gesture represents the thing being dragged. It is comput
 
 If the subject accessor returns null or undefined, the initiating event is ignored and a drag gesture is not started. Thus, a subject accessor determines which input events are ignored; the default subject accessor ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes. (The right button for the context menu, and the middle button for scrolling.)
 
-The default subject is the element in the originating selection (see [*drag*](#_drag)) that received the initiating input event. When dragging circle elements in SVG, it would be the circle element that received the mousedown or touchstart. When dragging circles with [Canvas](https://html.spec.whatwg.org/multipage/scripting.html#the-canvas-element), the default subject is the canvas element (regardless of where on the canvas you click). A custom subject accessor can perform hit-testing and return an appropriate datum to represent the object to be dragged:
+The default subject is the element in the originating selection (see [*drag*](#_drag)) that received the initiating input event. When dragging circle elements in SVG, it would be the circle element that received the mousedown or touchstart; with [Canvas](https://html.spec.whatwg.org/multipage/scripting.html#the-canvas-element), the default subject is the canvas element (regardless of where on the canvas you click). A custom subject accessor can perform hit-testing and return an appropriate datum to represent the object to be dragged:
 
 ```js
 function subject() {
