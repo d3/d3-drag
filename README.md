@@ -136,20 +136,28 @@ The *x*- and *y*-accessors determine the starting position of the [*subject*](#d
 
 <a href="#drag_on" name="drag_on">#</a> <i>drag</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>])
 
-…
+If *listener* is specified, sets the event *listener* for the specified *typenames* and returns the drag behavior. If an event listener was already registered for the same type and name, the existing listener is removed before the new listener is added. If *listener* is null, removes the current event listeners for the specified *typenames*, if any. If *listener* is not specified, returns the first currently-assigned listener matching the specified *typenames*, if any. When a specified event is dispatched, each *listener* will be invoked with the same context and arguments as [*selection*.on](https://github.com/d3/d3-selection#selection_on) listeners: the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
-Types:
+The *typenames* is a string containing one or more *typename* separated by whitespace. Each *typename* is a *type*, optionally followed by a period (`.`) and a *name*, such as `drag.foo` and `drag.bar`; the name allows multiple listeners to be registered for the same *type*. The *type* must be one of the following:
 
-* `start` -
-* `drag` -
-* `end` -
+* `start` - after a new pointer becomes active (on mousedown or touchstart).
+* `drag` - after an active pointer moves (on mousemove or touchmove).
+* `end` - after an active pointer becomes inactive (on mouseup, touchend or touchcancel).
 
-Built-in listeners:
+See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for details.
 
-* `.nodrag` -
-* `.noselect` -
-* `.noclick` -
-* `.noscroll` -
+**Separate events are dispatched for each active pointer** during a drag gesture. For example, if simultaneously dragging multiple subjects with multiple fingers, a start event is dispatched for each finger, even if both fingers start touching simultaneously.
+
+By default, the drag behavior does not [prevent default behaviors](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) on mousedown and touchstart; this is necessary because of a [Chrome bug](https://bugs.chromium.org/p/chromium/issues/detail?id=485892#c7) that prevents the capture of mousemove events outside an iframe, and because it would prevent clicks after touchend. When [Pointer Events](https://www.w3.org/TR/pointerevents/) are more widely available, the drag behavior may change to prevent default behaviors on pointerdown.
+
+While mousedown and touchstart’s default behaviors are allowed, the drag behavior registers several default named listeners to prevent other browser default behaviors:
+
+* `.nodrag` - prevents [drag-and-drop](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API).
+* `.noselect` - prevents [text selection](https://www.w3.org/TR/selection-api/).
+* `.noclick` - prevents [clicks](https://developer.mozilla.org/en-US/docs/Web/Events/click) if the subject is moved.
+* `.noscroll` - prevents [scrolling](https://developer.mozilla.org/en-US/docs/Web/Events/scroll).
+
+Remove a listener if you desire the corresponding browser default behavior; for example, `drag.on(".noclick", null)` enables clicks after dragging.
 
 ### Drag Events
 
