@@ -120,7 +120,7 @@ function x() {
 }
 ```
 
-The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the new position of the subject (*event*.x and *event*.y) and the pointer maintain their relative distance during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
+The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the relative position of the subject (*event*.x and *event*.y) and the pointer is maintained during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
 
 <a href="#drag_y" name="drag_y">#</a> <i>drag</i>.<b>y</b>([<i>y</i>])
 
@@ -132,7 +132,7 @@ function y() {
 }
 ```
 
-The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the new position of the subject (*event*.x and *event*.y) and the pointer maintain their relative distance during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
+The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the relative position of the subject (*event*.x and *event*.y) and the pointer is maintained during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
 
 <a href="#drag_on" name="drag_on">#</a> <i>drag</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>])
 
