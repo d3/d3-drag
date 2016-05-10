@@ -164,7 +164,7 @@ Remove a listener if you desire the corresponding browser default behavior; for 
 When a [drag event listener](#drag_on) is invoked, [d3.event](https://github.com/d3/d3-selection#event) is set to the current drag event. The *event* object exposes several fields:
 
 * `type` - the string “beforestart”, “start”, “drag” or “end”; see [*drag*.on](#drag_on).
-* `subject` - the drag subject, defined by [*drag*.subject](#drag_subject).
+* `subject` - the drag subject, defined by [*drag*.subject](#drag_subject); undefined for beforestart events.
 * `x` - the *x*-coordinate of the subject; see [*drag*.x](#drag_x) and [*drag*.container](#drag_container).
 * `y` - the *y*-coordinate of the subject; see [*drag*.y](#drag_y) and [*drag*.container](#drag_container).
 * `identifier` - the “mouse” for mouse dragging, or a long touch identifier for touch dragging.
