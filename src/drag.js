@@ -24,7 +24,7 @@ function defaultContainer() {
   return this.parentNode;
 }
 
-export default function() {
+export default function(started) {
   var x = defaultX,
       y = defaultY,
       subject = defaultSubject,
@@ -43,6 +43,7 @@ export default function() {
   var listeners = dispatch("start", "drag", "end")
       .on("start.nodrag", nodrag)
       .on("start.noselect", noselect)
+      .on("start", started)
       .on("drag.noclick", noclick)
       .on("drag.noscroll", cancel);
 
