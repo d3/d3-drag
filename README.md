@@ -86,7 +86,7 @@ If the filter returns falsey, the initiating event is ignored and no drag gestur
 If *subject* is specified, sets the subject accessor to the specified object or function and returns the drag behavior. If *subject* is not specified, returns the current subject accessor, which defaults to:
 
 ```js
-function subject() {
+function subject(d) {
   return d == null ? this : d;
 }
 ```
