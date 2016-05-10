@@ -4,7 +4,7 @@
 
 Alas, it’s somewhat tedious today to implement robust drag-and-drop using standard browser APIs. Until [Pointer Events](https://www.w3.org/TR/pointerevents/) are widely available, you must handle mouse and touch input separately, and deal with a handful of browser bugs.
 
-This module offers as a (hopefully!) painless solution. The [drag behavior](#api-reference) provides a convenient abstraction for drag-and-drop using mouse and touch input. It’s flexible and configurable, too: the drag behavior is agnostic about DOM representation, so you can use it to drag SVG, HTML or even Canvas graphics.
+This module offers a (hopefully!) painless solution. The [drag behavior](#api-reference) provides a convenient abstraction for drag-and-drop using mouse and touch input. It’s flexible and configurable, too; it’s agnostic about DOM representation, so you can use it to drag SVG, HTML or even Canvas graphics.
 
 ## Installing
 
