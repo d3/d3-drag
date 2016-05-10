@@ -49,7 +49,7 @@ Applying the drag behavior also sets the [-webkit-tap-highlight-color](https://d
 
 <a href="#drag_subject" name="drag_subject">#</a> <i>drag</i>.<b>subject</b>([<i>subject</i>])
 
-If *subject* is specified, sets the subject accessor to the specified function and returns the drag behavior. If *subject* is not specified, returns the current subject accessor, which defaults to:
+If *subject* is specified, sets the subject accessor to the specified object or function and returns the drag behavior. If *subject* is not specified, returns the current subject accessor, which defaults to:
 
 ```js
 function subject() {
@@ -74,17 +74,29 @@ function subject() {
 }
 ```
 
-The subject of a drag gesture may not be changed after the gesture starts; it can only be computed immediately before. The subject accessor is invoked with the same context and arguments as [*selection*.on](https://github.com/d3/d3-selection#selection_on) listeners: the current datum `d` and index `i`, with the `this` context as the current DOM element. During the evaluation of the subject accessor, [d3.event](https://github.com/d3/d3-selection#event) is set to a beforestart [drag event](#drag-events); use *event*.sourceEvent to access the initiating input event and *event*.identifier to access the touch identifier, if needed.
+The subject of a drag gesture may not be changed after the gesture starts; it can only be computed immediately before. The subject accessor is invoked with the same context and arguments as [*selection*.on](https://github.com/d3/d3-selection#selection_on) listeners: the current datum `d` and index `i`, with the `this` context as the current DOM element. During the evaluation of the subject accessor, [d3.event](https://github.com/d3/d3-selection#event) is set to a beforestart [drag event](#drag-events); if needed, use *event*.sourceEvent to access the initiating input event and *event*.identifier to access the touch identifier. The *event*.x and *event*.y are relative to the [container](#drag_container), and are computed using [d3.mouse](https://github.com/d3/d3-selection#mouse) or [d3.touch](https://github.com/d3/d3-selection#touch) as appropriate.
 
 <a href="#drag_container" name="drag_container">#</a> <i>drag</i>.<b>container</b>([<i>container</i>])
 
-…
+If *container* is specified, sets the container accessor to the specified object or function and returns the drag behavior. If *container* is not specified, returns the current container accessor, which defaults to:
 
 ```js
 function container() {
   return this.parentNode;
 }
 ```
+
+The *container* of a drag gesture, in conjunction with [*drag*.x](#drag_x) and [*drag*.y](#drag_y), determines the coordinate system of subsequent [drag events](#drag-events): *event*.x and *event*.y. The resulting container element is passed to [d3.mouse](https://github.com/d3/d3-selection#mouse) or [d3.touch](https://github.com/d3/d3-selection#touch), as appropriate, to determine the local coordinates of the pointer.
+
+The default container accessor uses the coordinate system of the parent node. This is often appropriate when dragging SVG or HTML elements, since those elements are typically positioned relative to a parent. For dragging graphical elements with a Canvas, however, you may want to redefine the container as the initiating element:
+
+```js
+function container() {
+  return this;
+}
+```
+
+Alternatively, the container may be specified as the element directly, such as `drag.container(canvas)`, rather than a function which returns it.
 
 <a href="#drag_x" name="drag_x">#</a> <i>drag</i>.<b>x</b>([<i>x</i>])
 
