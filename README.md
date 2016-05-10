@@ -47,21 +47,53 @@ selection.on(".drag", null);
 
 Applying the drag behavior also sets the [-webkit-tap-highlight-color](https://developer.apple.com/library/mac/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html#//apple_ref/doc/uid/TP40006510-SW5) style to transparent, disabling the tap highlight on iOS. If you want a different tap highlight color, remove or re-apply this style after applying the drag behavior.
 
+<a href="#drag_container" name="drag_container">#</a> <i>drag</i>.<b>container</b>([<i>container</i>])
+
+If *container* is specified, sets the container accessor to the specified object or function and returns the drag behavior. If *container* is not specified, returns the current container accessor, which defaults to:
+
+```js
+function container() {
+  return this.parentNode;
+}
+```
+
+The *container* of a drag gesture determines the coordinate system of subsequent [drag events](#drag-events), affecting *event*.x and *event*.y. The element returned by the container accessor is subsequently passed to [d3.mouse](https://github.com/d3/d3-selection#mouse) or [d3.touch](https://github.com/d3/d3-selection#touch), as appropriate, to determine the local coordinates of the pointer.
+
+The default container accessor returns the parent node of the element in the originating selection (see [*drag*](#_drag)) that received the initiating input event. This is often appropriate when dragging SVG or HTML elements, since those elements are typically positioned relative to a parent. For dragging graphical elements with a Canvas, however, you may want to redefine the container as the initiating element itself:
+
+```js
+function container() {
+  return this;
+}
+```
+
+Alternatively, the container may be specified as the element directly, such as `drag.container(canvas)`.
+
+<a href="#drag_filter" href="drag_filter">#</a> <i>drag</i>.<b>filter</b>([<i>filter</i>])
+
+If *filter* is specified, sets the filter to the specified function and returns the drag behavior. If *filter* is not specified, returns the current filter, which defaults to:
+
+```js
+function filter() {
+  return !d3.event.button;
+}
+```
+
+If the filter returns falsey, the initiating event is ignored and no drag gestures are started. Thus, the filter determines which input events are ignored; the default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes. (The right button for the context menu, and the middle button for scrolling.)
+
 <a href="#drag_subject" name="drag_subject">#</a> <i>drag</i>.<b>subject</b>([<i>subject</i>])
 
 If *subject* is specified, sets the subject accessor to the specified object or function and returns the drag behavior. If *subject* is not specified, returns the current subject accessor, which defaults to:
 
 ```js
 function subject() {
-  return d3.event.sourceEvent.button ? null : this;
+  return d == null ? this : d;
 }
 ```
 
-The *subject* of a drag gesture represents the thing being dragged. It is computed when an initiating input event is received, such as a mousedown or touchstart, immediately before the drag gesure starts. If non-null, the subject is then exposed as *event*.subject on subsequent [drag events](#drag-events) for this gesture.
+The *subject* of a drag gesture represents *the thing being dragged*. It is computed when an initiating input event is received, such as a mousedown or touchstart, immediately before the drag gesture starts. The subject is then exposed as *event*.subject on subsequent [drag events](#drag-events) for this gesture.
 
-If the subject accessor returns null or undefined, the initiating event is ignored and a drag gesture is not started. Thus, a subject accessor determines which input events are ignored; the default subject accessor ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes. (The right button for the context menu, and the middle button for scrolling.)
-
-The default subject is the element in the originating selection (see [*drag*](#_drag)) that received the initiating input event. When dragging circle elements in SVG, it would be the circle element that received the mousedown or touchstart; with [Canvas](https://html.spec.whatwg.org/multipage/scripting.html#the-canvas-element), the default subject is the canvas element (regardless of where on the canvas you click). A custom subject accessor can perform hit-testing and return an appropriate datum to represent the object to be dragged, such as:
+The default subject is the [datum](https://github.com/d3/d3-selection#selection_datum) of the element in the originating selection (see [*drag*](#_drag)) that received the initiating input event. When dragging circle elements in SVG, it would be the datum of the circle element that received the initiating mousedown or touchstart; with [Canvas](https://html.spec.whatwg.org/multipage/scripting.html#the-canvas-element), the default subject is the canvas element’s datum (regardless of where on the canvas you click). In this case, a custom subject accessor that performs hit-testing would be more appropriate, such as:
 
 ```js
 function subject() {
@@ -74,37 +106,17 @@ function subject() {
 }
 ```
 
+Typically, the returned subject should be an object that exposes `x` and `y` properties; see [*drag*.x](#drag_x) and [*drag*.y](#drag_y). If the subject is null or undefined, no drag gesture is started for this pointer; however, other starting touches may yet start drag gestures. See also [*drag*.filter](#drag_filter).
+
 The subject of a drag gesture may not be changed after the gesture starts; it can only be computed immediately before. The subject accessor is invoked with the same context and arguments as [*selection*.on](https://github.com/d3/d3-selection#selection_on) listeners: the current datum `d` and index `i`, with the `this` context as the current DOM element. During the evaluation of the subject accessor, [d3.event](https://github.com/d3/d3-selection#event) is set to a beforestart [drag event](#drag-events); if needed, use *event*.sourceEvent to access the initiating input event and *event*.identifier to access the touch identifier. The *event*.x and *event*.y are relative to the [container](#drag_container), and are computed using [d3.mouse](https://github.com/d3/d3-selection#mouse) or [d3.touch](https://github.com/d3/d3-selection#touch) as appropriate.
-
-<a href="#drag_container" name="drag_container">#</a> <i>drag</i>.<b>container</b>([<i>container</i>])
-
-If *container* is specified, sets the container accessor to the specified object or function and returns the drag behavior. If *container* is not specified, returns the current container accessor, which defaults to:
-
-```js
-function container() {
-  return this.parentNode;
-}
-```
-
-The *container* of a drag gesture, in conjunction with [*drag*.x](#drag_x) and [*drag*.y](#drag_y), determines the coordinate system of subsequent [drag events](#drag-events): *event*.x and *event*.y. The resulting container element is passed to [d3.mouse](https://github.com/d3/d3-selection#mouse) or [d3.touch](https://github.com/d3/d3-selection#touch), as appropriate, to determine the local coordinates of the pointer.
-
-The default container accessor uses the coordinate system of the parent node. This is often appropriate when dragging SVG or HTML elements, since those elements are typically positioned relative to a parent. For dragging graphical elements with a Canvas, however, you may want to redefine the container as the initiating element:
-
-```js
-function container() {
-  return this;
-}
-```
-
-Alternatively, the container may be specified as the element directly, such as `drag.container(canvas)`, rather than a function which returns it.
 
 <a href="#drag_x" name="drag_x">#</a> <i>drag</i>.<b>x</b>([<i>x</i>])
 
 …
 
 ```js
-function x(d) {
-  return (d == null ? d3.event.subject : d).x;
+function x() {
+  return d3.event.subject.x;
 }
 ```
 
@@ -113,8 +125,8 @@ function x(d) {
 …
 
 ```js
-function y(d) {
-  return (d == null ? d3.event.subject : d).y;
+function y() {
+  return d3.event.subject.y;
 }
 ```
 
