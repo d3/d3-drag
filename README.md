@@ -4,7 +4,7 @@ Drag nodes in a force-directed graph.
 
 Drag user interface elements such as sliders and brushes.
 
-Draw lines.
+Draw squiggly lines.
 
 The drag behavior is agnostic about DOM representation: it can be used with SVG, HTML or Canvas. It’s also agnostic about input types: it can be used with mouse- or touch-based input, and in the future, [pointer events](https://www.w3.org/TR/pointerevents/).
 
