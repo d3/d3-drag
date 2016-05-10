@@ -7,28 +7,33 @@ import noclick from "./noclick";
 import nodrag from "./nodrag";
 import noselect from "./noselect";
 
-function defaultX(d) {
-  return (d == null ? event.subject : d).x;
-}
-
-function defaultY(d) {
-  return (d == null ? event.subject : d).y;
-}
-
 // Ignore right-click, since that should open the context menu.
-function defaultSubject() {
-  return event.sourceEvent.button ? null : this;
+function defaultFilter() {
+  return !event.button;
 }
 
 function defaultContainer() {
   return this.parentNode;
 }
 
+function defaultSubject(d) {
+  return d == null ? this : d;
+}
+
+function defaultX() {
+  return event.subject.x;
+}
+
+function defaultY() {
+  return event.subject.y;
+}
+
 export default function(started) {
-  var x = defaultX,
-      y = defaultY,
-      subject = defaultSubject,
+  var filter = defaultFilter,
       container = defaultContainer,
+      subject = defaultSubject,
+      x = defaultX,
+      y = defaultY,
       active = {};
 
   // I’d like to call preventDefault on mousedown to disable native dragging
@@ -57,6 +62,7 @@ export default function(started) {
   }
 
   function mousedowned() {
+    if (!filter.apply(this, arguments)) return;
     var parent = container.apply(this, arguments);
     if (!start("mouse", parent, mouse, this, arguments)) return;
     select(event.view).on("mousemove.drag", mousemoved).on("mouseup.drag", mouseupped);
@@ -74,6 +80,7 @@ export default function(started) {
   }
 
   function touchstarted() {
+    if (!filter.apply(this, arguments)) return;
     var parent = container.apply(this, arguments);
     for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
       start(touches[i].identifier, parent, touch, this, arguments);
@@ -118,12 +125,16 @@ export default function(started) {
     return true;
   }
 
-  drag.subject = function(_) {
-    return arguments.length ? (subject = typeof _ === "function" ? _ : constant(_), drag) : subject;
+  drag.filter = function(_) {
+    return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), drag) : filter;
   };
 
   drag.container = function(_) {
     return arguments.length ? (container = typeof _ === "function" ? _ : constant(_), drag) : container;
+  };
+
+  drag.subject = function(_) {
+    return arguments.length ? (subject = typeof _ === "function" ? _ : constant(_), drag) : subject;
   };
 
   drag.x = function(_) {
