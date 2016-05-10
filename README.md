@@ -144,9 +144,9 @@ The *typenames* is a string containing one or more *typename* separated by white
 * `drag` - after an active pointer moves (on mousemove or touchmove).
 * `end` - after an active pointer becomes inactive (on mouseup, touchend or touchcancel).
 
-See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for details.
+See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 
-**Separate events are dispatched for each active pointer** during a drag gesture. For example, if simultaneously dragging multiple subjects with multiple fingers, a start event is dispatched for each finger, even if both fingers start touching simultaneously.
+Changes to registered listeners via *drag*.on during a drag gesture *do not affect* the current drag gesture. Instead, you must use [*event*.on](#event_on), which also allows you to register temporary event listeners for the current drag gesture. **Separate events are dispatched for each active pointer** during a drag gesture. For example, if simultaneously dragging multiple subjects with multiple fingers, a start event is dispatched for each finger, even if both fingers start touching simultaneously. See [Drag Events](#drag-events) for more.
 
 By default, the drag behavior does not [prevent default behaviors](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) on mousedown and touchstart; this is necessary because of a [Chrome bug](https://bugs.chromium.org/p/chromium/issues/detail?id=485892#c7) that prevents the capture of mousemove events outside an iframe, and because it would prevent clicks after touchend. When [Pointer Events](https://www.w3.org/TR/pointerevents/) are more widely available, the drag behavior may change to prevent default behaviors on pointerdown.
 
@@ -161,15 +161,35 @@ Remove a listener if you desire the corresponding browser default behavior; for 
 
 ### Drag Events
 
-<a href="#event" name="event">#</a> <i>event</i>
+When a listener registered by [*drag*.on](#drag_on) is invoked, [d3.event](https://github.com/d3/d3-selection#event) is set to the current drag event. The *event* object exposes several fields:
 
-* `type` - “beforestart”, “start”, “drag” or “end”
-* `subject` -
-* `identifier` - “mouse” or a touch identifier (long)
-* `x` -
-* `y` -
-* `sourceEvent` -
+* `type` - the string “beforestart”, “start”, “drag” or “end”; see [*drag*.on](#drag_on).
+* `subject` - the drag subject, defined by [*drag*.subject](#drag_subject).
+* `x` - the *x*-coordinate of the subject; see [*drag*.x](#drag_x) and [*drag*.container](#drag_container).
+* `y` - the *y*-coordinate of the subject; see [*drag*.y](#drag_y) and [*drag*.container](#drag_container).
+* `identifier` - the “mouse” for mouse dragging, or a long touch identifier for touch dragging.
+* `sourceEvent` - the underlying input event, such as mousemove or touchmove.
+
+The *event* object also exposes the [*event*.on](#event_on) method.
 
 <a href="#event_on" name="event_on">#</a> <i>event</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>])
 
-… Like [*drag*.on](#drag_on), but only applies to the current drag.
+Equivalent to [*drag*.on](#drag_on), but only applies to the current drag gesture. Before the drag gesture starts, a [copy](https://github.com/d3/d3-dispatch#dispatch_copy) of the current drag [event listeners](#drag_on) is made. This copy is bound to the current drag gesture and modified by *event*.on. This is useful for temporary listeners that only receive events for the current drag gesture. For example, this start event listener registers temporary drag and end event listeners for the current gesture:
+
+```js
+function started() {
+  var circle = d3.select(this).classed("dragging", true);
+
+  d3.event.on("drag", dragged).on("end", ended);
+
+  function dragged(d) {
+    circle.raise().attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+  }
+
+  function ended() {
+    circle.classed("dragging", false);
+  }
+}
+```
+
+The temporary listeners only receive drag and end events for the bound circle, and are automatically discarded when the circle is released.
