@@ -167,7 +167,7 @@ When a [drag event listener](#drag_on) is invoked, [d3.event](https://github.com
 * `subject` - the drag subject, defined by [*drag*.subject](#drag_subject).
 * `x` - the *x*-coordinate of the subject; see [*drag*.x](#drag_x) and [*drag*.container](#drag_container).
 * `y` - the *y*-coordinate of the subject; see [*drag*.y](#drag_y) and [*drag*.container](#drag_container).
-* `identifier` - the string “mouse”, or a long [touch identifier](https://www.w3.org/TR/touch-events/#widl-Touch-identifier).
+* `identifier` - the string “mouse”, or a numeric [touch identifier](https://www.w3.org/TR/touch-events/#widl-Touch-identifier).
 * `sourceEvent` - the underlying input event, such as mousemove or touchmove.
 
 The *event* object also exposes the [*event*.on](#event_on) method.
