@@ -1,12 +1,10 @@
 # d3-drag
 
-Drag nodes in a force-directed graph.
+[Drag-and-drop](https://en.wikipedia.org/wiki/Drag_and_drop) is an easy-to-learn and simple pointing interaction technique: move the pointer to an object, press and hold to grab it, “drag” the object to a new location, and then release to “drop”. You might use it to reposition nodes in a [force-directed graph](https://github.com/d3/d3-force), to implement a custom [slider](https://en.wikipedia.org/wiki/Slider_(computing)), or even to paint lines on a canvas.
 
-Drag user interface elements such as sliders and brushes.
+Alas, it’s still somewhat tedious to implement robust drag-and-drop using standard browser APIs. Until [Pointer Events](https://www.w3.org/TR/pointerevents/) are widely available, you must handle mouse and multitouch input separately, and deal with a handful of browser bugs.
 
-Draw squiggly lines.
-
-The drag behavior is agnostic about DOM representation: it can be used with SVG, HTML or Canvas. It’s also agnostic about input types: it can be used with mouse- or touch-based input, and in the future, [pointer events](https://www.w3.org/TR/pointerevents/).
+This module offers as a (hopefully!) painless solution. The [drag behavior](#api-reference) provides a convenient abstraction for drag-and-drop using mouse and touch input. It’s flexible and configurable, too: the drag behavior is agnostic about DOM representation, so you can use it to drag SVG, HTML or even Canvas graphics.
 
 ## Installing
 
