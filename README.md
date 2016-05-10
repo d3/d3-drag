@@ -1,6 +1,6 @@
 # d3-drag
 
-[Drag-and-drop](https://en.wikipedia.org/wiki/Drag_and_drop) is an easy-to-learn and simple pointing interaction technique: move the pointer to an object, press and hold to grab it, “drag” the object to a new location, and then release to “drop”. You might use it to reposition nodes in a [force-directed graph](https://github.com/d3/d3-force), to implement a custom [slider](https://en.wikipedia.org/wiki/Slider_(computing)), or even to paint lines on a canvas.
+[Drag-and-drop](https://en.wikipedia.org/wiki/Drag_and_drop) is an easy-to-learn and simple pointing interaction technique: move the pointer to an object, press and hold to grab it, “drag” the object to a new location, and then release to “drop”. You might use it to reposition nodes in a [force-directed graph](https://github.com/d3/d3-force), to implement a custom [slider](https://en.wikipedia.org/wiki/Slider_\(computing\)), or even to paint lines on a canvas.
 
 Alas, it’s still somewhat tedious to implement robust drag-and-drop using standard browser APIs. Until [Pointer Events](https://www.w3.org/TR/pointerevents/) are widely available, you must handle mouse and multitouch input separately, and deal with a handful of browser bugs.
 
