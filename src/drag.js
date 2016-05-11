@@ -63,9 +63,10 @@ export default function(started) {
 
   function mousedowned() {
     if (!filter.apply(this, arguments)) return;
-    var parent = container.apply(this, arguments);
-    if (!start("mouse", parent, mouse, this, arguments)) return;
+    var parent = container.apply(this, arguments), m;
+    if (!(m = beforestart("mouse", parent, mouse, this, arguments))) return;
     select(event.view).on("mousemove.drag", mousemoved).on("mouseup.drag", mouseupped);
+    m("start");
   }
 
   function mousemoved() {
@@ -73,17 +74,17 @@ export default function(started) {
   }
 
   function mouseupped() {
-    var m = active.mouse;
     select(event.view).on("mousemove.drag mouseup.drag", null);
-    delete active.mouse;
-    m("end");
+    active.mouse("end");
   }
 
   function touchstarted() {
     if (!filter.apply(this, arguments)) return;
     var parent = container.apply(this, arguments);
-    for (var touches = event.changedTouches, i = 0, n = touches.length; i < n; ++i) {
-      start(touches[i].identifier, parent, touch, this, arguments);
+    for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
+      if (t = beforestart(touches[i].identifier, parent, touch, this, arguments)) {
+        t("start");
+      }
     }
   }
 
@@ -98,13 +99,12 @@ export default function(started) {
   function touchended() {
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
       if (t = active[touches[i].identifier]) {
-        delete active[touches[i].identifier];
         t("end");
       }
     }
   }
 
-  function start(id, parent, point, that, args) {
+  function beforestart(id, parent, point, that, args) {
     var p0 = point(parent, id), dx, dy,
         sublisteners = listeners.copy(),
         node;
@@ -115,14 +115,17 @@ export default function(started) {
       dx = x.apply(that, args) - p0[0] || 0;
       dy = y.apply(that, args) - p0[1] || 0;
       return true;
-    })) return false;
+    })) return;
 
-    (active[id] = function(type, p) {
-      if (p == null) p = point(parent, id);
+    return function gesture(type) {
+      var p;
+      switch (type) {
+        case "start": p = p0, active[id] = gesture; break;
+        case "end": delete active[id]; // nobreak
+        case "drag": p = point(parent, id); break;
+      }
       customEvent(new DragEvent(type, node, id, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
-    })("start", p0);
-
-    return true;
+    };
   }
 
   drag.filter = function(_) {
