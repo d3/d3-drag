@@ -200,7 +200,10 @@ When a [drag event listener](#drag_on) is invoked, [d3.event](https://github.com
 * `x` - the *x*-coordinate of the subject; see [*drag*.x](#drag_x) and [*drag*.container](#drag_container).
 * `y` - the *y*-coordinate of the subject; see [*drag*.y](#drag_y) and [*drag*.container](#drag_container).
 * `identifier` - the string “mouse”, or a numeric [touch identifier](https://www.w3.org/TR/touch-events/#widl-Touch-identifier).
+* `active` - the number of currently active drag gestures (on start and end, not including this one).
 * `sourceEvent` - the underlying input event, such as mousemove or touchmove.
+
+The *event*.active field is useful for detecting the first start event and the last end event in a sequence of concurrent drag gestures: it is zero when the first drag gesture starts, and zero when the last drag gesture ends.
 
 The *event* object also exposes the [*event*.on](#event_on) method.
 

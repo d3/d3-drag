@@ -34,7 +34,8 @@ export default function(started) {
       subject = defaultSubject,
       x = defaultX,
       y = defaultY,
-      active = {};
+      gestures = {},
+      active = 0;
 
   // I’d like to call preventDefault on mousedown to disable native dragging
   // of links or images and native text selection. However, in Chrome this
@@ -70,12 +71,12 @@ export default function(started) {
   }
 
   function mousemoved() {
-    active.mouse("drag");
+    gestures.mouse("drag");
   }
 
   function mouseupped() {
     select(event.view).on("mousemove.drag mouseup.drag", null);
-    active.mouse("end");
+    gestures.mouse("end");
   }
 
   function touchstarted() {
@@ -90,7 +91,7 @@ export default function(started) {
 
   function touchmoved() {
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
-      if (t = active[touches[i].identifier]) {
+      if (t = gestures[touches[i].identifier]) {
         t("drag");
       }
     }
@@ -98,7 +99,7 @@ export default function(started) {
 
   function touchended() {
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
-      if (t = active[touches[i].identifier]) {
+      if (t = gestures[touches[i].identifier]) {
         t("end");
       }
     }
@@ -109,7 +110,7 @@ export default function(started) {
         sublisteners = listeners.copy(),
         node;
 
-    if (!customEvent(new DragEvent("beforestart", node, id, p0[0], p0[1], sublisteners), function() {
+    if (!customEvent(new DragEvent("beforestart", node, id, active, p0[0], p0[1], sublisteners), function() {
       node = event.subject = subject.apply(that, args);
       if (node == null) return false;
       dx = x.apply(that, args) - p0[0] || 0;
@@ -118,13 +119,13 @@ export default function(started) {
     })) return;
 
     return function gesture(type) {
-      var p;
+      var p, n;
       switch (type) {
-        case "start": p = p0, active[id] = gesture; break;
-        case "end": delete active[id]; // nobreak
-        case "drag": p = point(parent, id); break;
+        case "start": p = p0, gestures[id] = gesture, n = active++; break;
+        case "end": delete gestures[id], --active; // nobreak
+        case "drag": p = point(parent, id), n = active; break;
       }
-      customEvent(new DragEvent(type, node, id, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
+      customEvent(new DragEvent(type, node, id, n, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
     };
   }
 

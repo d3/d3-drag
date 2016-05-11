@@ -1,7 +1,8 @@
-export default function DragEvent(type, subject, id, x, y, dispatch) {
+export default function DragEvent(type, subject, id, active, x, y, dispatch) {
   this.type = type;
   this.subject = subject;
   this.identifier = id;
+  this.active = active;
   this.x = x;
   this.y = y;
   this._ = dispatch;
