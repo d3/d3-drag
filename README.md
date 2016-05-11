@@ -1,6 +1,6 @@
 # d3-drag
 
-[Drag-and-drop](https://en.wikipedia.org/wiki/Drag_and_drop) is a popular and easy-to-learn pointing gesture: move the pointer to an object, press and hold to grab it, “drag” the object to a new location, and release to “drop”. D3’s [drag behavior](#api-reference) provides a convenient but flexible abstraction for enabling drag-and-drop on [selections](https://github.com/d3/d3-selection). You can use d3-drag to allow interaction with a [force-directed graph](https://github.com/d3/d3-force), or a simulation of colliding circles:
+[Drag-and-drop](https://en.wikipedia.org/wiki/Drag_and_drop) is a popular and easy-to-learn pointing gesture: move the pointer to an object, press and hold to grab it, “drag” the object to a new location, and release to “drop”. D3’s [drag behavior](#api-reference) provides a convenient but flexible abstraction for enabling drag-and-drop interaction on [selections](https://github.com/d3/d3-selection). You can use d3-drag to allow interaction with a [force-directed graph](https://github.com/d3/d3-force), or a simulation of colliding circles:
 
 [<img alt="Force Dragging I" src="https://raw.githubusercontent.com/d3/d3-drag/master/img/force-graph.png" width="420" height="219">](http://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7)[<img alt="Force Dragging II" src="https://raw.githubusercontent.com/d3/d3-drag/master/img/force-collide.png" width="420" height="219">](http://bl.ocks.org/mbostock/2990a882e007f8384b04827617752738)
 
