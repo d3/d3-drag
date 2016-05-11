@@ -1,8 +1,6 @@
 # d3-drag
 
-[Drag-and-drop](https://en.wikipedia.org/wiki/Drag_and_drop) is an easy and popular interaction technique: move the pointer to an object, press and hold to grab it, “drag” the object to a new location, and release to “drop”. D3’s [drag behavior](#api-reference) provides a convenient but flexible abstraction for drag-and-drop.
-
-You might use drag-and-drop to position nodes in a [force-directed graph](https://github.com/d3/d3-force) or a physics simulation:
+[Drag-and-drop](https://en.wikipedia.org/wiki/Drag_and_drop) is an easy and popular interaction technique: move the pointer to an object, press and hold to grab it, “drag” the object to a new location, and release to “drop”. D3’s [drag behavior](#api-reference) provides a convenient but flexible abstraction for drag-and-drop.You might use it to position nodes in a [force-directed graph](https://github.com/d3/d3-force) or a physics simulation of colliding circles:
 
 [<img alt="Force Dragging I" src="https://raw.githubusercontent.com/d3/d3-drag/master/img/force-graph.png" width="420" height="219">](http://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7)[<img alt="Force Dragging II" src="https://raw.githubusercontent.com/d3/d3-drag/master/img/force-collide.png" width="420" height="219">](http://bl.ocks.org/mbostock/2990a882e007f8384b04827617752738)
 
@@ -10,9 +8,9 @@ Or you might use it to paint lines on a canvas:
 
 [<img alt="Line Drawing" src="https://raw.githubusercontent.com/d3/d3-drag/master/img/drawing.png" width="420" height="219">](http://bl.ocks.org/mbostock/f705fc55e6f26df29354)
 
-You could even use to implement a custom [slider](https://en.wikipedia.org/wiki/Slider_\(computing\)).
+You could even use to implement a custom slider.
 
-The drag behavior is agnostic about DOM representation, so you can use it to drag SVG, HTML or even Canvas graphics. You can also extend it with advanced pointer selection techniques, such as a Voronoi overlay or a closest-subject search.
+The drag behavior is agnostic about DOM representation, so you can use it to drag SVG, HTML or even Canvas graphics! You can also extend it with advanced selection techniques, such as a Voronoi overlay or a closest-target search.
 
 [<img alt="Circle Dragging II" src="https://raw.githubusercontent.com/d3/d3-drag/master/img/canvas.png" width="420" height="219">](http://bl.ocks.org/mbostock/c206c20294258c18832ff80d8fd395c3)[<img alt="Circle Dragging IV" src="https://raw.githubusercontent.com/d3/d3-drag/master/img/voronoi.png" width="420" height="219">](http://bl.ocks.org/mbostock/ec10387f24c1fad2acac3bc11eb218a5)
 
