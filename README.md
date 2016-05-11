@@ -91,26 +91,40 @@ If *subject* is specified, sets the subject accessor to the specified object or 
 
 ```js
 function subject(d) {
-  return d == null ? this : d;
+  return d;
 }
 ```
 
 The *subject* of a drag gesture represents *the thing being dragged*. It is computed when an initiating input event is received, such as a mousedown or touchstart, immediately before the drag gesture starts. The subject is then exposed as *event*.subject on subsequent [drag events](#drag-events) for this gesture.
 
-The default subject is the [datum](https://github.com/d3/d3-selection#selection_datum) of the element in the originating selection (see [*drag*](#_drag)) that received the initiating input event. If the datum is undefined, the default subject is the element itself. When dragging circle elements in SVG, the default subject is the datum of the circle element that received the initiating mousedown or touchstart; with [Canvas](https://html.spec.whatwg.org/multipage/scripting.html#the-canvas-element), the default subject is the canvas element’s datum (regardless of where on the canvas you click). In this case, a custom subject accessor that performs hit-testing would be more appropriate, such as:
+The default subject is the [datum](https://github.com/d3/d3-selection#selection_datum) of the element in the originating selection (see [*drag*](#_drag)) that received the initiating input event. When dragging circle elements in SVG, the default subject is the datum of the circle element being dragged; with [Canvas](https://html.spec.whatwg.org/multipage/scripting.html#the-canvas-element), the default subject is the canvas element’s datum (regardless of where on the canvas you click). In this case, a custom subject accessor would be more appropriate, such as one that picks the closest circle to the mouse within a given search *radius*:
 
 ```js
 function subject() {
-  for (var i = 0, n = circles.length, circle, x, y; i < n; ++i) {
+  var i = 0,
+      n = circles.length,
+      dx,
+      dy,
+      d2,
+      s2 = radius * radius,
+      circle,
+      subject;
+
+  for (i = 0; i < n; ++i) {
     circle = circles[i];
-    x = d3.event.x - circle.x;
-    y = d3.event.y - circle.y;
-    if (x * x + y * y < circle.radius * circle.radius) return circle;
+    dx = d3.event.x - circle.x;
+    dy = d3.event.y - circle.y;
+    d2 = dx * dx + dy * dy;
+    if (d2 < s2) subject = circle, s2 = d2;
   }
+
+  return subject;
 }
 ```
 
-Typically, the returned subject should be an object that exposes `x` and `y` properties, so that the relative position of the subject and the pointer can be preserved during the drag gesture; see [*drag*.x](#drag_x) and [*drag*.y](#drag_y). If the subject is null or undefined, no drag gesture is started for this pointer; however, other starting touches may yet start drag gestures. See also [*drag*.filter](#drag_filter).
+(If necessary, the above can be accelerated using [*quadtree*.find](https://github.com/d3/d3-quadtree#quadtree_find).)
+
+The returned subject is typically an object that exposes `x` and `y` properties, so that the relative position of the subject and the pointer can be preserved during the drag gesture; see [*drag*.x](#drag_x) and [*drag*.y](#drag_y). If the subject is null or undefined, no drag gesture is started for this pointer; however, other starting touches may yet start drag gestures. See also [*drag*.filter](#drag_filter).
 
 The subject of a drag gesture may not be changed after the gesture starts. The subject accessor is invoked with the same context and arguments as [*selection*.on](https://github.com/d3/d3-selection#selection_on) listeners: the current datum `d` and index `i`, with the `this` context as the current DOM element. During the evaluation of the subject accessor, [d3.event](https://github.com/d3/d3-selection#event) is a beforestart [drag event](#drag-events). Use *event*.sourceEvent to access the initiating input event and *event*.identifier to access the touch identifier. The *event*.x and *event*.y are relative to the [container](#drag_container), and are computed using [d3.mouse](https://github.com/d3/d3-selection#mouse) or [d3.touch](https://github.com/d3/d3-selection#touch) as appropriate.
 
