@@ -35,7 +35,8 @@ export default function(started) {
       x = defaultX,
       y = defaultY,
       gestures = {},
-      active = 0;
+      active = 0,
+      touchending;
 
   // I’d like to call preventDefault on mousedown to disable native dragging
   // of links or images and native text selection. However, in Chrome this
@@ -63,7 +64,7 @@ export default function(started) {
   }
 
   function mousedowned() {
-    if (!filter.apply(this, arguments)) return;
+    if (touchending || !filter.apply(this, arguments)) return;
     var parent = container.apply(this, arguments), m;
     if (!(m = beforestart("mouse", parent, mouse, this, arguments))) return;
     select(event.view).on("mousemove.drag", mousemoved, true).on("mouseup.drag", mouseupped, true);
@@ -100,9 +101,15 @@ export default function(started) {
   function touchended() {
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
       if (t = gestures[touches[i].identifier]) {
+        if (touchending) clearTimeout(touchending);
+        touchending = setTimeout(aftertouchend, 500); // Ghost clicks are delayed!
         t("end");
       }
     }
+  }
+
+  function aftertouchend() {
+    touchending = null;
   }
 
   function beforestart(id, parent, point, that, args) {
