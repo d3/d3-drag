@@ -66,7 +66,7 @@ export default function(started) {
     if (!filter.apply(this, arguments)) return;
     var parent = container.apply(this, arguments), m;
     if (!(m = beforestart("mouse", parent, mouse, this, arguments))) return;
-    select(event.view).on("mousemove.drag", mousemoved).on("mouseup.drag", mouseupped);
+    select(event.view).on("mousemove.drag", mousemoved, true).on("mouseup.drag", mouseupped, true);
     m("start");
   }
 
