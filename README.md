@@ -51,7 +51,7 @@ This table describes how the drag behavior interprets native events:
 ¹ Propagation will be stopped in a future release; see [#16](https://github.com/d3/d3-drag/issues/16).
 <br>² Default cannot be prevented due to browser bugs; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>³ Only applies during an active drag gesture.
-<br>⁴ Only applies immediately after a non-stationary drag gesture ends.
+<br>⁴ Only applies immediately after a non-empty drag gesture ends.
 <br>⁵ Ignored if within 500ms of a touch drag gesture ending; assumes [mouse emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
 <a href="#drag" name="drag">#</a> d3.<b>drag</b>([<i>started</i>])
