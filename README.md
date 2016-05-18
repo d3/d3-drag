@@ -37,23 +37,24 @@ This table describes how the drag behavior interprets native events:
 
 | Event        | Listening Element | Drag Event | Default Prevented? |
 | ------------ | ----------------- | ---------- | ------------------ |
-| mousedown⁴   | selection         | start      | no¹                |
-| mousemove²   | window            | drag       | yes                |
-| mouseup²     | window            | end        | no¹                |
+| mousedown⁵   | selection         | start      | no¹                |
+| mousemove²   | window³           | drag       | yes                |
+| mouseup²     | window³           | end        | no¹                |
 | touchstart   | selection         | start      | no¹                |
 | touchmove    | selection         | drag       | yes                |
 | touchend     | selection         | end        | no¹                |
 | touchcancel  | selection         | end        | no¹                |
 | selectstart² | window            | -          | yes                |
 | dragstart²   | window            | -          | yes                |
-| click³       | window            | -          | yes                |
+| click⁴       | window            | -          | yes                |
 
 The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation). If you want to prevent some events from initiating a drag gesture, use [*drag*.filter](#drag_filter).
 
 ¹ Default cannot be prevented due to browser bugs; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>² Only applies during an active drag gesture.
-<br>³ Only applies immediately after a non-empty drag gesture ends.
-<br>⁴ Ignored if within 500ms of a touch drag gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
+<br>³ Necessary to capture events outside an iframe; see [#9](https://github.com/d3/d3-drag/issues/9).
+<br>⁴ Only applies immediately after a non-empty drag gesture ends.
+<br>⁵ Ignored if within 500ms of a touch drag gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
 <a href="#drag" name="drag">#</a> d3.<b>drag</b>([<i>started</i>])
 
