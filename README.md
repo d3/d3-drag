@@ -35,24 +35,25 @@ var drag = d3_drag.drag();
 
 This table describes how the drag behavior interprets native events:
 
-| Event        | Listening Element | Drag Event | Default Prevented? | Propagation Stopped? |
-| ------------ | ----------------- | ---------- | ------------------ | -------------------- |
-| mousedown⁵   | selection         | start      | no²                | no¹                  |
-| mousemove³   | window            | drag       | yes                | yes                  |
-| mouseup³     | window            | end        | no²                | no¹                  |
-| touchstart   | selection         | start      | no²                | no¹                  |
-| touchmove    | selection         | drag       | yes                | yes                  |
-| touchend     | selection         | end        | no²                | no¹                  |
-| touchcancel  | selection         | end        | no²                | no¹                  |
-| selectstart³ | window            | -          | yes                | yes                  |
-| dragstart³   | window            | -          | yes                | yes                  |
-| click⁴       | window            | -          | yes                | yes                  |
+| Event        | Listening Element | Drag Event | Default Prevented? |
+| ------------ | ----------------- | ---------- | ------------------ |
+| mousedown⁴   | selection         | start      | no¹                |
+| mousemove²   | window            | drag       | yes                |
+| mouseup²     | window            | end        | no¹                |
+| touchstart   | selection         | start      | no¹                |
+| touchmove    | selection         | drag       | yes                |
+| touchend     | selection         | end        | no¹                |
+| touchcancel  | selection         | end        | no¹                |
+| selectstart² | window            | -          | yes                |
+| dragstart²   | window            | -          | yes                |
+| click³       | window            | -          | yes                |
 
-¹ Propagation will be stopped in a future release; see [#16](https://github.com/d3/d3-drag/issues/16).
-<br>² Default cannot be prevented due to browser bugs; see [#9](https://github.com/d3/d3-drag/issues/9).
-<br>³ Only applies during an active drag gesture.
-<br>⁴ Only applies immediately after a non-empty drag gesture ends.
-<br>⁵ Ignored if within 500ms of a touch drag gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
+The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation). If you want to prevent some events from initiating a drag gesture, use [*drag*.filter](#drag_filter).
+
+¹ Default cannot be prevented due to browser bugs; see [#9](https://github.com/d3/d3-drag/issues/9).
+<br>² Only applies during an active drag gesture.
+<br>³ Only applies immediately after a non-empty drag gesture ends.
+<br>⁴ Ignored if within 500ms of a touch drag gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
 <a href="#drag" name="drag">#</a> d3.<b>drag</b>([<i>started</i>])
 

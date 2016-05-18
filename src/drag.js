@@ -1,10 +1,10 @@
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
-import cancel from "./cancel";
 import constant from "./constant";
 import DragEvent from "./event";
 import noclick from "./noclick";
 import nodrag from "./nodrag";
+import noscroll from "./noscroll";
 import noselect from "./noselect";
 
 // Ignore right-click, since that should open the context menu.
@@ -52,7 +52,7 @@ export default function(started) {
       .on("start.noselect", noselect)
       .on("start", started)
       .on("drag.noclick", noclick)
-      .on("drag.noscroll", cancel);
+      .on("drag.noscroll", noscroll);
 
   function drag(selection) {
     selection
@@ -132,6 +132,7 @@ export default function(started) {
         case "end": delete gestures[id], --active; // nobreak
         case "drag": p = point(parent, id), n = active; break;
       }
+      event.stopImmediatePropagation();
       customEvent(new DragEvent(type, node, id, n, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
     };
   }
