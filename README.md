@@ -37,7 +37,7 @@ This table describes how the drag behavior interprets native events:
 
 | Event        | Listening Element | Drag Event | Default Prevented? | Propagation Stopped? |
 | ------------ | ----------------- | ---------- | ------------------ | -------------------- |
-| mousedown    | selection         | start      | no²                | no¹                  |
+| mousedown⁵   | selection         | start      | no²                | no¹                  |
 | mousemove³   | window            | drag       | yes                | yes                  |
 | mouseup³     | window            | end        | no²                | no¹                  |
 | touchstart   | selection         | start      | no²                | no¹                  |
@@ -52,6 +52,7 @@ This table describes how the drag behavior interprets native events:
 <br>² Default cannot be prevented due to browser bugs; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>³ Only applies during an active drag gesture.
 <br>⁴ Only applies immediately after a non-stationary drag gesture ends.
+<br>⁵ Ignored if within 500ms of a touch drag gesture ending; assumes [mouse emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
 <a href="#drag" name="drag">#</a> d3.<b>drag</b>([<i>started</i>])
 
