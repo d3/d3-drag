@@ -16,7 +16,7 @@ Best of all, the drag behavior automatically unifies mouse and touch input, and 
 
 ## Installing
 
-If you use NPM, `npm install d3-drag`. Otherwise, download the [latest release](https://github.com/d3/d3-drag/releases/latest). You can also load directly from [d3js.org](https://d3js.org), either as a [standalone library](https://d3js.org/d3-drag.v0.1.min.js) or as part of [D3 4.0 alpha](https://github.com/d3/d3). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `d3_drag` global is exported:
+If you use NPM, `npm install d3-drag`. Otherwise, download the [latest release](https://github.com/d3/d3-drag/releases/latest). You can also load directly from [d3js.org](https://d3js.org), either as a [standalone library](https://d3js.org/d3-drag.v0.1.min.js) or as part of [D3 4.0](https://github.com/d3/d3). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `d3_drag` global is exported:
 
 ```html
 <script src="https://d3js.org/d3-dispatch.v0.4.min.js"></script>
