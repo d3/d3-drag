@@ -33,6 +33,26 @@ var drag = d3_drag.drag();
 
 ## API Reference
 
+This table describes how the drag behavior interprets native events:
+
+| Event        | Listening Element | Drag Event | Default Prevented? | Propagation Stopped? |
+| ------------ | ----------------- | ---------- | ------------------ | -------------------- |
+| mousedown    | selection         | start      | no²                | no¹                  |
+| mousemove³   | window            | drag       | yes                | yes                  |
+| mouseup³     | window            | end        | no²                | no¹                  |
+| touchstart   | selection         | start      | no²                | no¹                  |
+| touchmove    | selection         | drag       | yes                | yes                  |
+| touchend     | selection         | end        | no²                | no¹                  |
+| touchcancel  | selection         | end        | no²                | no¹                  |
+| selectstart³ | window            | -          | yes                | yes                  |
+| dragstart³   | window            | -          | yes                | yes                  |
+| click⁴       | window            | -          | yes                | yes                  |
+
+<br>¹ Propagation will be stopped in a future release; see [#16](https://github.com/d3/d3-drag/issues/16).
+<br>² Default cannot be prevented due to browser bugs; see [#9](https://github.com/d3/d3-drag/issues/9).
+<br>³ Only applies during an active drag gesture.
+<br>⁴ Only applies immediately after a non-stationary drag gesture ends.
+
 <a href="#drag" name="drag">#</a> d3.<b>drag</b>([<i>started</i>])
 
 Creates a new drag behavior. If *started* is specified, registers the specified function as a `start` event listener via [*drag*.on](#drag_on), equivalent to:
