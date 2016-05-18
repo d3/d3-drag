@@ -48,7 +48,7 @@ This table describes how the drag behavior interprets native events:
 | dragstart³   | window            | -          | yes                | yes                  |
 | click⁴       | window            | -          | yes                | yes                  |
 
-<br>¹ Propagation will be stopped in a future release; see [#16](https://github.com/d3/d3-drag/issues/16).
+¹ Propagation will be stopped in a future release; see [#16](https://github.com/d3/d3-drag/issues/16).
 <br>² Default cannot be prevented due to browser bugs; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>³ Only applies during an active drag gesture.
 <br>⁴ Only applies immediately after a non-stationary drag gesture ends.
