@@ -21,10 +21,10 @@ function yesuserselect() {
   delete root.__noselect;
 }
 
-export function noselect(selection) {
-  return ("onselectstart" in event.target ? noselectstart : nouserselect)(selection);
+export function nodrag(selection) {
+  return ("onselectstart" in event.target ? noselectstart : nouserselect)(selection.on("dragstart.drag", noevent, true));
 }
 
-export function yesselect(selection) {
-  return ("onselectstart" in event.target ? yesselectstart : yesuserselect)(selection);
+export function yesdrag(selection) {
+  return ("onselectstart" in event.target ? yesselectstart : yesuserselect)(selection.on("dragstart.drag", null));
 }
