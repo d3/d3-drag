@@ -42,8 +42,8 @@ This table describes how the drag behavior interprets native events:
 | mouseup²     | window⁴           | end        | yes                |
 | touchstart   | selection         | start      | no¹                |
 | touchmove    | selection         | drag       | yes                |
-| touchend     | selection         | end        | yes                |
-| touchcancel  | selection         | end        | yes                |
+| touchend     | selection         | end        | no¹                |
+| touchcancel  | selection         | end        | no¹                |
 | selectstart² | window            | -          | yes                |
 | dragstart²   | window            | -          | yes                |
 | click³       | window            | -          | yes                |

@@ -1,8 +1,8 @@
 import {event} from "d3-selection";
-import cancel from "./cancel";
+import noevent from "./noevent";
 
 function noselectstart(selection) {
-  selection.on("selectstart.drag", cancel, true);
+  selection.on("selectstart.drag", noevent, true);
 }
 
 function yesselectstart(selection) {

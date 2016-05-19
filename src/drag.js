@@ -1,6 +1,6 @@
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
-import cancel from "./cancel";
+import noevent, {nopropagation} from "./noevent";
 import constant from "./constant";
 import DragEvent from "./event";
 import {noselect, yesselect} from "./noselect";
@@ -57,26 +57,30 @@ export default function(started) {
     select(event.view)
         .on("mousemove.drag", mousemoved, true)
         .on("mouseup.drag", mouseupped, true)
-        .on("dragstart.drag", cancel, true)
+        .on("dragstart.drag", noevent, true)
         .call(noselect);
 
+    nopropagation();
     mousemoving = false;
     m("start");
   }
 
   function mousemoved() {
+    noevent();
     mousemoving = true;
     gestures.mouse("drag");
   }
 
   function mouseupped() {
     var v = select(event.view).on("mousemove.drag mouseup.drag dragstart.drag", null).call(yesselect);
-    if (mousemoving) v.on("click.drag", cancel, true), setTimeout(function() { v.on("click.drag", null); }, 0);
+    if (mousemoving) v.on("click.drag", noevent, true), setTimeout(function() { v.on("click.drag", null); }, 0);
+    noevent();
     gestures.mouse("end");
   }
 
   function touchstarted() {
     if (!filter.apply(this, arguments)) return;
+    nopropagation();
     var parent = container.apply(this, arguments);
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
       if (t = beforestart(touches[i].identifier, parent, touch, this, arguments)) {
@@ -86,6 +90,7 @@ export default function(started) {
   }
 
   function touchmoved() {
+    noevent();
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
       if (t = gestures[touches[i].identifier]) {
         t("drag");
@@ -94,6 +99,7 @@ export default function(started) {
   }
 
   function touchended() {
+    nopropagation();
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
       if (t = gestures[touches[i].identifier]) {
         if (touchending) clearTimeout(touchending);
@@ -121,9 +127,8 @@ export default function(started) {
       switch (type) {
         case "start": p = p0, gestures[id] = gesture, n = active++; break;
         case "end": delete gestures[id], --active; // nobreak
-        case "drag": p = point(parent, id), n = active; event.preventDefault(); break;
+        case "drag": p = point(parent, id), n = active; break;
       }
-      event.stopImmediatePropagation();
       customEvent(new DragEvent(type, node, id, n, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
     };
   }
