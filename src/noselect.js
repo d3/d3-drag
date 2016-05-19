@@ -22,9 +22,9 @@ function yesuserselect() {
 }
 
 export function noselect(selection) {
-  return ("onselectstart" in event.view ? noselectstart : nouserselect)(selection);
+  return ("onselectstart" in event.target ? noselectstart : nouserselect)(selection);
 }
 
 export function yesselect(selection) {
-  return ("onselectstart" in event.view ? yesselectstart : yesuserselect)(selection);
+  return ("onselectstart" in event.target ? yesselectstart : yesuserselect)(selection);
 }
