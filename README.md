@@ -40,13 +40,13 @@ This table describes how the drag behavior interprets native events:
 | mousedown⁵   | selection         | start      | no¹                |
 | mousemove²   | window¹           | drag       | yes                |
 | mouseup²     | window¹           | end        | yes                |
+| dragstart²   | window            | -          | yes                |
+| selectstart² | window            | -          | yes                |
 | click³       | window            | -          | yes                |
 | touchstart   | selection         | start      | no⁴                |
 | touchmove    | selection         | drag       | yes                |
 | touchend     | selection         | end        | no⁴                |
 | touchcancel  | selection         | end        | no⁴                |
-| dragstart²   | window            | -          | yes                |
-| selectstart² | window            | -          | yes                |
 
 The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation). If you want to prevent some events from initiating a drag gesture, use [*drag*.filter](#drag_filter).
 
