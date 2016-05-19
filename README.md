@@ -51,8 +51,8 @@ This table describes how the drag behavior interprets native events:
 The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation). If you want to prevent some events from initiating a drag gesture, use [*drag*.filter](#drag_filter).
 
 ¹ Necessary to capture events outside an iframe; see [#9](https://github.com/d3/d3-drag/issues/9).
-<br>² Only applies during an active, mouse-based drag gesture; see [#9](https://github.com/d3/d3-drag/issues/9).
-<br>³ Only applies immediately after a non-empty, mouse-based drag gesture ends.
+<br>² Only applies during an active, mouse-based gesture; see [#9](https://github.com/d3/d3-drag/issues/9).
+<br>³ Only applies immediately after a non-empty, mouse-based gesture ends.
 <br>⁴ Necessary to allow [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7) on touch input; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
