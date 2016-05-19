@@ -132,8 +132,8 @@ The default subject is the [datum](https://github.com/d3/d3-selection#selection_
 
 ```js
 function subject() {
-  var i = 0,
-      n = circles.length,
+  var n = circles.length,
+      i,
       dx,
       dy,
       d2,
@@ -196,23 +196,6 @@ The *typenames* is a string containing one or more *typename* separated by white
 See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 
 Changes to registered listeners via *drag*.on during a drag gesture *do not affect* the current drag gesture. Instead, you must use [*event*.on](#event_on), which also allows you to register temporary event listeners for the current drag gesture. **Separate events are dispatched for each active pointer** during a drag gesture. For example, if simultaneously dragging multiple subjects with multiple fingers, a start event is dispatched for each finger, even if both fingers start touching simultaneously. See [Drag Events](#drag-events) for more.
-
-By default, the drag behavior does not [prevent default behaviors](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) on mousedown and touchstart; this is necessary because of a [Chrome bug](https://bugs.chromium.org/p/chromium/issues/detail?id=485892#c7) that prevents the capture of mousemove events outside an iframe, and because it would prevent clicks after touchend. When [Pointer Events](https://www.w3.org/TR/pointerevents/) are more widely available, the drag behavior may change to prevent default behaviors on pointerdown. The drag behavior also does not [stop event propagation](https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation) of these initiating events by default. When combining the drag behavior with other behaviors (such as [zooming](https://github.com/d3/d3-zoom); see [example](http://bl.ocks.org/mbostock/6123708)), you may wish to stop propagation on the source event:
-
-```js
-drag.on("start", function() {
-  d3.event.sourceEvent.stopPropagation(); // Don’t notify other listeners.
-});
-```
-
-While mousedown and touchstart’s default behaviors are allowed, the drag behavior registers several default named listeners to prevent other browser default behaviors:
-
-* `.nodrag` - prevents [drag-and-drop](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API).
-* `.noselect` - prevents [text selection](https://www.w3.org/TR/selection-api/).
-* `.noclick` - prevents [clicks](https://developer.mozilla.org/en-US/docs/Web/Events/click) if the subject is moved.
-* `.noscroll` - prevents [scrolling](https://developer.mozilla.org/en-US/docs/Web/Events/scroll).
-
-Remove a listener if you desire the corresponding browser default behavior; for example, `drag.on(".noclick", null)` enables clicks after dragging.
 
 ### Drag Events
 
