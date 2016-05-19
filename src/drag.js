@@ -1,11 +1,9 @@
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
+import cancel from "./cancel";
 import constant from "./constant";
 import DragEvent from "./event";
-import noclick from "./noclick";
-import nodrag from "./nodrag";
-import noscroll from "./noscroll";
-import noselect from "./noselect";
+import {noselect, yesselect} from "./noselect";
 
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {
@@ -36,23 +34,11 @@ export default function(started) {
       y = defaultY,
       gestures = {},
       active = 0,
+      mousemoving,
       touchending;
 
-  // I’d like to call preventDefault on mousedown to disable native dragging
-  // of links or images and native text selection. However, in Chrome this
-  // causes mousemove and mouseup events outside an iframe to be dropped:
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=269917
-  // And if you preventDefault on touchstart on iOS, it prevents the click
-  // event on touchend, even if there was no touchmove! So instead, we
-  // cancel the specific undesirable behaviors. If you want to change this
-  // behavior, you can unregister these listeners!
-
   var listeners = dispatch("start", "drag", "end")
-      .on("start.nodrag", nodrag)
-      .on("start.noselect", noselect)
-      .on("start", started)
-      .on("drag.noclick", noclick)
-      .on("drag.noscroll", noscroll);
+      .on("start", started);
 
   function drag(selection) {
     selection
@@ -67,16 +53,25 @@ export default function(started) {
     if (touchending || !filter.apply(this, arguments)) return;
     var parent = container.apply(this, arguments), m;
     if (!(m = beforestart("mouse", parent, mouse, this, arguments))) return;
-    select(event.view).on("mousemove.drag", mousemoved, true).on("mouseup.drag", mouseupped, true);
+
+    select(event.view)
+        .on("mousemove.drag", mousemoved, true)
+        .on("mouseup.drag", mouseupped, true)
+        .on("dragstart.drag", cancel, true)
+        .call(noselect);
+
+    mousemoving = false;
     m("start");
   }
 
   function mousemoved() {
+    mousemoving = true;
     gestures.mouse("drag");
   }
 
   function mouseupped() {
-    select(event.view).on("mousemove.drag mouseup.drag", null);
+    var v = select(event.view).on("mousemove.drag mouseup.drag dragstart.drag", null).call(yesselect);
+    if (mousemoving) v.on("click.drag", cancel, true), setTimeout(function() { v.on("click.drag", null); }, 0);
     gestures.mouse("end");
   }
 
@@ -102,14 +97,10 @@ export default function(started) {
     for (var touches = event.changedTouches, i = 0, n = touches.length, t; i < n; ++i) {
       if (t = gestures[touches[i].identifier]) {
         if (touchending) clearTimeout(touchending);
-        touchending = setTimeout(aftertouchend, 500); // Ghost clicks are delayed!
+        touchending = setTimeout(function() { touchending = null; }, 500); // Ghost clicks are delayed!
         t("end");
       }
     }
-  }
-
-  function aftertouchend() {
-    touchending = null;
   }
 
   function beforestart(id, parent, point, that, args) {
@@ -130,7 +121,7 @@ export default function(started) {
       switch (type) {
         case "start": p = p0, gestures[id] = gesture, n = active++; break;
         case "end": delete gestures[id], --active; // nobreak
-        case "drag": p = point(parent, id), n = active; break;
+        case "drag": p = point(parent, id), n = active; event.preventDefault(); break;
       }
       event.stopImmediatePropagation();
       customEvent(new DragEvent(type, node, id, n, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);

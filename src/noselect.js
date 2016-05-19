@@ -1,23 +1,30 @@
-import {event, select} from "d3-selection";
+import {event} from "d3-selection";
 import cancel from "./cancel";
 
-function noselectstart() {
-  var selectstart = "selectstart.noselect-" + event.identifier,
-      view = select(event.sourceEvent.view).on(selectstart, cancel, true);
-  event.on("end.noselect", function() {
-    view.on(selectstart, null);
-  });
+function noselectstart(selection) {
+  selection.on("selectstart.drag", cancel, true);
+}
+
+function yesselectstart(selection) {
+  selection.on("selectstart.drag", null);
 }
 
 function nouserselect() {
-  var style = this.ownerDocument.documentElement.style,
-      value = style.MozUserSelect;
+  var root = event.view.document.documentElement, style = root.style;
+  root.__noselect = style.MozUserSelect;
   style.MozUserSelect = "none";
-  event.on("end.noselect", function() {
-    style.MozUserSelect = value;
-  });
 }
 
-export default function() {
-  return ("onselectstart" in this ? noselectstart : nouserselect).apply(this, arguments);
+function yesuserselect() {
+  var root = event.view.document.documentElement;
+  root.style.MozUserSelect = root.__noselect;
+  delete root.__noselect;
+}
+
+export function noselect(selection) {
+  return ("onselectstart" in event.view ? noselectstart : nouserselect)(selection);
+}
+
+export function yesselect(selection) {
+  return ("onselectstart" in event.view ? yesselectstart : yesuserselect)(selection);
 }
