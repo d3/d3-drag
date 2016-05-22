@@ -51,11 +51,7 @@ export default function(started) {
     if (touchending || !filter.apply(this, arguments)) return;
     var gesture = beforestart("mouse", container.apply(this, arguments), mouse, this, arguments);
     if (!gesture) return;
-
-    select(event.view)
-        .on("mousemove.drag", mousemoved, true)
-        .on("mouseup.drag", mouseupped, true);
-
+    select(event.view).on("mousemove.drag", mousemoved, true).on("mouseup.drag", mouseupped, true);
     nodrag(event.view);
     nopropagation();
     mousemoving = false;
@@ -69,15 +65,8 @@ export default function(started) {
   }
 
   function mouseupped() {
-    var view = select(event.view)
-        .on("mousemove.drag mouseup.drag", null);
-
-    if (mousemoving) {
-      view.on("click.drag", noevent, true);
-      setTimeout(function() { view.on("click.drag", null); }, 0);
-    }
-
-    yesdrag(event.view);
+    select(event.view).on("mousemove.drag mouseup.drag", null);
+    yesdrag(event.view, mousemoving);
     noevent();
     gestures.mouse("end");
   }
