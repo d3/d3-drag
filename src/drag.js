@@ -112,25 +112,25 @@ export default function(started) {
   }
 
   function beforestart(id, container, point, that, args) {
-    var p0 = point(container, id), dx, dy,
+    var p = point(container, id), dx, dy,
         sublisteners = listeners.copy(),
         node;
 
-    if (!customEvent(new DragEvent("beforestart", node, id, active, p0[0], p0[1], sublisteners), function() {
+    if (!customEvent(new DragEvent("beforestart", node, id, active, p[0], p[1], sublisteners), function() {
       if ((event.subject = node = subject.apply(that, args)) == null) return false;
-      dx = x.apply(that, args) - p0[0] || 0;
-      dy = y.apply(that, args) - p0[1] || 0;
+      dx = x.apply(that, args) - p[0] || 0;
+      dy = y.apply(that, args) - p[1] || 0;
       return true;
     })) return;
 
     return function gesture(type) {
-      var p, n;
+      var p0 = p, n;
       switch (type) {
-        case "start": p = p0, gestures[id] = gesture, n = active++; break;
+        case "start": gestures[id] = gesture, n = active++; break;
         case "end": delete gestures[id], --active; // nobreak
         case "drag": p = point(container, id), n = active; break;
       }
-      customEvent(new DragEvent(type, node, id, n, p[0] + dx, p[1] + dy, sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
+      customEvent(new DragEvent(type, node, id, n, p[0] + dx, p[1] + dy, p[0] - p0[0], p[1] - p0[1], sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
     };
   }
 

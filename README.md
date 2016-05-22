@@ -213,6 +213,8 @@ When a [drag event listener](#drag_on) is invoked, [d3.event](https://github.com
 * `subject` - the drag subject, defined by [*drag*.subject](#drag_subject).
 * `x` - the *x*-coordinate of the subject; see [*drag*.x](#drag_x) and [*drag*.container](#drag_container).
 * `y` - the *y*-coordinate of the subject; see [*drag*.y](#drag_y) and [*drag*.container](#drag_container).
+* `dx` - the change in *x*-coordinate since the previous drag event.
+* `dy` - the change in *y*-coordinate since the previous drag event.
 * `identifier` - the string “mouse”, or a numeric [touch identifier](https://www.w3.org/TR/touch-events/#widl-Touch-identifier).
 * `active` - the number of currently active drag gestures (on start and end, not including this one).
 * `sourceEvent` - the underlying input event, such as mousemove or touchmove.
