@@ -15,7 +15,7 @@ function defaultContainer() {
 }
 
 function defaultSubject(d) {
-  return d;
+  return d == null ? this : d;
 }
 
 function defaultX() {
