@@ -1,9 +1,9 @@
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
+import nodrag, {yesdrag} from "./nodrag";
 import noevent, {nopropagation} from "./noevent";
 import constant from "./constant";
 import DragEvent from "./event";
-import {nodrag, yesdrag} from "./nodrag";
 
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {
@@ -54,9 +54,9 @@ export default function(started) {
 
     select(event.view)
         .on("mousemove.drag", mousemoved, true)
-        .on("mouseup.drag", mouseupped, true)
-        .call(nodrag);
+        .on("mouseup.drag", mouseupped, true);
 
+    nodrag(event.view);
     nopropagation();
     mousemoving = false;
     gesture("start");
@@ -70,14 +70,14 @@ export default function(started) {
 
   function mouseupped() {
     var view = select(event.view)
-        .on("mousemove.drag mouseup.drag", null)
-        .call(yesdrag);
+        .on("mousemove.drag mouseup.drag", null);
 
     if (mousemoving) {
       view.on("click.drag", noevent, true);
       setTimeout(function() { view.on("click.drag", null); }, 0);
     }
 
+    yesdrag(event.view);
     noevent();
     gestures.mouse("end");
   }
