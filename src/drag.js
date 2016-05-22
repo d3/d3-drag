@@ -116,7 +116,7 @@ export default function(started) {
         sublisteners = listeners.copy(),
         node;
 
-    if (!customEvent(new DragEvent("beforestart", node, id, active, p[0], p[1], sublisteners), function() {
+    if (!customEvent(new DragEvent("beforestart", node, id, active, p[0], p[1], 0, 0, sublisteners), function() {
       if ((event.subject = node = subject.apply(that, args)) == null) return false;
       dx = x.apply(that, args) - p[0] || 0;
       dy = y.apply(that, args) - p[1] || 0;
