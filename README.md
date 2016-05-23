@@ -56,15 +56,9 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 <br>⁴ Necessary to allow [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7) on touch input; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
-<a href="#drag" name="drag">#</a> d3.<b>drag</b>([<i>started</i>])
+<a href="#drag" name="drag">#</a> d3.<b>drag</b>()
 
-Creates a new drag behavior. If *started* is specified, registers the specified function as a `start` event listener via [*drag*.on](#drag_on), equivalent to:
-
-```js
-var drag = d3.drag().on("start", started);
-```
-
-The returned behavior, [*drag*](#_drag), is an object and a function, and can be applied to a [selection](https://github.com/d3/d3-selection) by calling it.
+Creates a new drag behavior. The returned behavior, [*drag*](#_drag), is both an object and a function, and is typically applied to selected elements via [*selection*.call](https://github.com/d3/d3-selection#selection_call).
 
 <a href="#_drag" name="_drag">#</a> <i>drag</i>(<i>selection</i>)
 

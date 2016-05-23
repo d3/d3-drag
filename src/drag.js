@@ -26,14 +26,14 @@ function defaultY() {
   return event.subject.y;
 }
 
-export default function(started) {
+export default function() {
   var filter = defaultFilter,
       container = defaultContainer,
       subject = defaultSubject,
       x = defaultX,
       y = defaultY,
       gestures = {},
-      listeners = dispatch("start", "drag", "end").on("start", started),
+      listeners = dispatch("start", "drag", "end"),
       active = 0,
       mousemoving,
       touchending;
