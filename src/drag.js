@@ -105,7 +105,7 @@ export default function() {
     var p = point(container, id), s, dx, dy,
         sublisteners = listeners.copy();
 
-    if (!customEvent(new DragEvent("beforestart", s, id, active, p[0], p[1], 0, 0, sublisteners), function() {
+    if (!customEvent(new DragEvent(drag, "beforestart", s, id, active, p[0], p[1], 0, 0, sublisteners), function() {
       if ((event.subject = s = subject.apply(that, args)) == null) return false;
       dx = s.x - p[0] || 0;
       dy = s.y - p[1] || 0;
@@ -119,7 +119,7 @@ export default function() {
         case "end": delete gestures[id], --active; // nobreak
         case "drag": p = point(container, id), n = active; break;
       }
-      customEvent(new DragEvent(type, s, id, n, p[0] + dx, p[1] + dy, p[0] - p0[0], p[1] - p0[1], sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
+      customEvent(new DragEvent(drag, type, s, id, n, p[0] + dx, p[1] + dy, p[0] - p0[0], p[1] - p0[1], sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
     };
   }
 
