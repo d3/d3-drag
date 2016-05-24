@@ -65,7 +65,7 @@ Creates a new drag behavior. The returned behavior, [*drag*](#_drag), is both an
 Applies this drag behavior to the specified [*selection*](https://github.com/d3/d3-selection). This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call). For example, to instantiate a drag behavior and apply it to a selection:
 
 ```js
-d3.selectAll(".node").call(d3.drag(started));
+d3.selectAll(".node").call(d3.drag().on("start", started));
 ```
 
 Internally, the drag behavior uses [*selection*.on](https://github.com/d3/d3-selection#selection_on) to bind the necessary event listeners for dragging. The listeners use the name `.drag`, so you can subsequently unbind the drag behavior as follows:
