@@ -149,33 +149,9 @@ function subject() {
 
 (If necessary, the above can be accelerated using [*quadtree*.find](https://github.com/d3/d3-quadtree#quadtree_find).)
 
-The returned subject is typically an object that exposes `x` and `y` properties, so that the relative position of the subject and the pointer can be preserved during the drag gesture; see [*drag*.x](#drag_x) and [*drag*.y](#drag_y). If the subject is null or undefined, no drag gesture is started for this pointer; however, other starting touches may yet start drag gestures. See also [*drag*.filter](#drag_filter).
+The returned subject should be an object that exposes `x` and `y` properties, so that the relative position of the subject and the pointer can be preserved during the drag gesture. If the subject is null or undefined, no drag gesture is started for this pointer; however, other starting touches may yet start drag gestures. See also [*drag*.filter](#drag_filter).
 
 The subject of a drag gesture may not be changed after the gesture starts. The subject accessor is invoked with the same context and arguments as [*selection*.on](https://github.com/d3/d3-selection#selection_on) listeners: the current datum `d` and index `i`, with the `this` context as the current DOM element. During the evaluation of the subject accessor, [d3.event](https://github.com/d3/d3-selection#event) is a beforestart [drag event](#drag-events). Use *event*.sourceEvent to access the initiating input event and *event*.identifier to access the touch identifier. The *event*.x and *event*.y are relative to the [container](#drag_container), and are computed using [d3.mouse](https://github.com/d3/d3-selection#mouse) or [d3.touch](https://github.com/d3/d3-selection#touch) as appropriate.
-
-<a href="#drag_x" name="drag_x">#</a> <i>drag</i>.<b>x</b>([<i>x</i>])
-
-If *x* is specified, sets the *x*-position accessor to the specified function and returns the drag behavior. If *x* is not specified, returns the current *x*-accessor, which defaults to:
-
-```js
-function x() {
-  return d3.event.subject.x;
-}
-```
-
-The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the relative position of the subject (*event*.x and *event*.y) and the pointer is maintained during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
-
-<a href="#drag_y" name="drag_y">#</a> <i>drag</i>.<b>y</b>([<i>y</i>])
-
-If *y* is specified, sets the *y*-position accessor to the specified function and returns the drag behavior. If *y* is not specified, returns the current *y*-accessor, which defaults to:
-
-```js
-function y() {
-  return d3.event.subject.y;
-}
-```
-
-The *x*- and *y*-accessors determine the starting position of the [*subject*](#drag_subject), such that the relative position of the subject (*event*.x and *event*.y) and the pointer is maintained during the drag gesture; see [Drag Events](#drag-events). The default accessors assume the *subject* exposes `x` and `y` properties representing its position.
 
 <a href="#drag_on" name="drag_on">#</a> <i>drag</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>])
 
@@ -205,8 +181,8 @@ When a [drag event listener](#drag_on) is invoked, [d3.event](https://github.com
 
 * `type` - the string “start”, “drag” or “end”; see [*drag*.on](#drag_on).
 * `subject` - the drag subject, defined by [*drag*.subject](#drag_subject).
-* `x` - the *x*-coordinate of the subject; see [*drag*.x](#drag_x) and [*drag*.container](#drag_container).
-* `y` - the *y*-coordinate of the subject; see [*drag*.y](#drag_y) and [*drag*.container](#drag_container).
+* `x` - the new *x*-coordinate of the subject; see [*drag*.container](#drag_container).
+* `y` - the new *y*-coordinate of the subject; see [*drag*.container](#drag_container).
 * `dx` - the change in *x*-coordinate since the previous drag event.
 * `dy` - the change in *y*-coordinate since the previous drag event.
 * `identifier` - the string “mouse”, or a numeric [touch identifier](https://www.w3.org/TR/touch-events/#widl-Touch-identifier).

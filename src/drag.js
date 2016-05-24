@@ -18,20 +18,10 @@ function defaultSubject(d) {
   return d == null ? {x: event.x, y: event.y} : d;
 }
 
-function defaultX() {
-  return event.subject.x;
-}
-
-function defaultY() {
-  return event.subject.y;
-}
-
 export default function() {
   var filter = defaultFilter,
       container = defaultContainer,
       subject = defaultSubject,
-      x = defaultX,
-      y = defaultY,
       gestures = {},
       listeners = dispatch("start", "drag", "end"),
       active = 0,
@@ -112,14 +102,13 @@ export default function() {
   }
 
   function beforestart(id, container, point, that, args) {
-    var p = point(container, id), dx, dy,
-        sublisteners = listeners.copy(),
-        node;
+    var p = point(container, id), s, dx, dy,
+        sublisteners = listeners.copy();
 
-    if (!customEvent(new DragEvent("beforestart", node, id, active, p[0], p[1], 0, 0, sublisteners), function() {
-      if ((event.subject = node = subject.apply(that, args)) == null) return false;
-      dx = x.apply(that, args) - p[0] || 0;
-      dy = y.apply(that, args) - p[1] || 0;
+    if (!customEvent(new DragEvent("beforestart", s, id, active, p[0], p[1], 0, 0, sublisteners), function() {
+      if ((event.subject = s = subject.apply(that, args)) == null) return false;
+      dx = s.x - p[0] || 0;
+      dy = s.y - p[1] || 0;
       return true;
     })) return;
 
@@ -130,7 +119,7 @@ export default function() {
         case "end": delete gestures[id], --active; // nobreak
         case "drag": p = point(container, id), n = active; break;
       }
-      customEvent(new DragEvent(type, node, id, n, p[0] + dx, p[1] + dy, p[0] - p0[0], p[1] - p0[1], sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
+      customEvent(new DragEvent(type, s, id, n, p[0] + dx, p[1] + dy, p[0] - p0[0], p[1] - p0[1], sublisteners), sublisteners.apply, sublisteners, [type, that, args]);
     };
   }
 
@@ -144,14 +133,6 @@ export default function() {
 
   drag.subject = function(_) {
     return arguments.length ? (subject = typeof _ === "function" ? _ : constant(_), drag) : subject;
-  };
-
-  drag.x = function(_) {
-    return arguments.length ? (x = typeof _ === "function" ? _ : constant(+_), drag) : x;
-  };
-
-  drag.y = function(_) {
-    return arguments.length ? (y = typeof _ === "function" ? _ : constant(+_), drag) : y;
   };
 
   drag.on = function() {
