@@ -179,7 +179,7 @@ Allows native drag-and-drop and text selection on the specified *window*; undoes
 
 When a [drag event listener](#drag_on) is invoked, [d3.event](https://github.com/d3/d3-selection#event) is set to the current drag event. The *event* object exposes several fields:
 
-* `target - the associated [drag behavior](#drag).
+* `target` - the associated [drag behavior](#drag).
 * `type` - the string “start”, “drag” or “end”; see [*drag*.on](#drag_on).
 * `subject` - the drag subject, defined by [*drag*.subject](#drag_subject).
 * `x` - the new *x*-coordinate of the subject; see [*drag*.container](#drag_container).
