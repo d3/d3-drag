@@ -67,9 +67,9 @@ export default function() {
         c = container.apply(this, arguments),
         n = touches.length, i, gesture;
 
-    nopropagation();
     for (i = 0; i < n; ++i) {
       if (gesture = beforestart(touches[i].identifier, c, touch, this, arguments)) {
+        nopropagation();
         gesture("start");
       }
     }
@@ -79,9 +79,9 @@ export default function() {
     var touches = event.changedTouches,
         n = touches.length, i, gesture;
 
-    noevent();
     for (i = 0; i < n; ++i) {
       if (gesture = gestures[touches[i].identifier]) {
+        noevent();
         gesture("drag");
       }
     }
@@ -91,11 +91,11 @@ export default function() {
     var touches = event.changedTouches,
         n = touches.length, i, gesture;
 
-    nopropagation();
     if (touchending) clearTimeout(touchending);
     touchending = setTimeout(function() { touchending = null; }, 500); // Ghost clicks are delayed!
     for (i = 0; i < n; ++i) {
       if (gesture = gestures[touches[i].identifier]) {
+        nopropagation();
         gesture("end");
       }
     }
