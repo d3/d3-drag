@@ -8,7 +8,7 @@
     "behavior",
     "interaction"
   ],
-  "homepage": "https://github.com/d3/d3-drag",
+  "homepage": "https://d3js.org/d3-drag/",
   "license": "BSD-3-Clause",
   "author": {
     "name": "Mike Bostock",
@@ -21,19 +21,19 @@
     "url": "https://github.com/d3/d3-drag.git"
   },
   "scripts": {
-    "pretest": "rm -rf build && mkdir build && json2module package.json > build/package.js && rollup -g d3-dispatch:d3_dispatch,d3-selection:d3_selection -f umd -n d3_drag -o build/d3-drag.js -- index.js",
+    "pretest": "rm -rf build && mkdir build && rollup --banner \"$(preamble)\" -g d3-dispatch:d3,d3-selection:d3 -f umd -n d3 -o build/d3-drag.js -- index.js",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
-    "prepublish": "npm run test && uglifyjs build/d3-drag.js -c -m -o build/d3-drag.min.js",
-    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git push --tags && cp build/d3-drag.js ../d3.github.com/d3-drag.v0.2.js && cp build/d3-drag.min.js ../d3.github.com/d3-drag.v0.2.min.js && cd ../d3.github.com && git add d3-drag.v0.2.js d3-drag.v0.2.min.js && git commit -m \"d3-drag ${VERSION}\" && git push && cd - && zip -j build/d3-drag.zip -- LICENSE README.md build/d3-drag.js build/d3-drag.min.js"
+    "prepublish": "npm run test && uglifyjs --preamble \"$(preamble)\" build/d3-drag.js -c -m -o build/d3-drag.min.js",
+    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git push --tags && cp build/d3-drag.js ../d3.github.com/d3-drag.v0.3.js && cp build/d3-drag.min.js ../d3.github.com/d3-drag.v0.3.min.js && cd ../d3.github.com && git add d3-drag.v0.3.js d3-drag.v0.3.min.js && git commit -m \"d3-drag ${VERSION}\" && git push && cd - && zip -j build/d3-drag.zip -- LICENSE README.md build/d3-drag.js build/d3-drag.min.js"
   },
   "dependencies": {
-    "d3-dispatch": "~0.4.3",
-    "d3-selection": "~0.7.2"
+    "d3-dispatch": "~0.5.0",
+    "d3-selection": "~0.8.0"
   },
   "devDependencies": {
     "eslint": "2",
-    "json2module": "0.0",
-    "rollup": "0.26",
+    "package-preamble": "0.0",
+    "rollup": "0.27",
     "tape": "4",
     "uglify-js": "2"
   }
