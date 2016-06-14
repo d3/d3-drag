@@ -4,6 +4,7 @@
   "description": "Drag and drop SVG, HTML or Canvas using mouse or touch input.",
   "keywords": [
     "d3",
+    "d3-module",
     "drag",
     "behavior",
     "interaction"
