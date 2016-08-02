@@ -1,6 +1,6 @@
 {
   "name": "d3-drag",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Drag and drop SVG, HTML or Canvas using mouse or touch input.",
   "keywords": [
     "d3",
