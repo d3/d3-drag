@@ -120,7 +120,7 @@ If *subject* is specified, sets the subject accessor to the specified object or 
 
 ```js
 function subject(d) {
-  return d == null ? {x: event.x, y: event.y} : d;
+  return d == null ? {x: d3.event.x, y: d3.event.y} : d;
 }
 ```
 
