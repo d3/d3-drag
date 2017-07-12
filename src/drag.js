@@ -18,6 +18,10 @@ function defaultSubject(d) {
   return d == null ? {x: event.x, y: event.y} : d;
 }
 
+function touchable() {
+  return "ontouchstart" in this;
+}
+
 export default function() {
   var filter = defaultFilter,
       container = defaultContainer,
@@ -34,6 +38,7 @@ export default function() {
   function drag(selection) {
     selection
         .on("mousedown.drag", mousedowned)
+      .filter(touchable)
         .on("touchstart.drag", touchstarted)
         .on("touchmove.drag", touchmoved)
         .on("touchend.drag touchcancel.drag", touchended)
