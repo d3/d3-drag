@@ -102,7 +102,7 @@ function container() {
 
 Alternatively, the container may be specified as the element directly, such as `drag.container(canvas)`.
 
-<a href="#drag_filter" href="drag_filter">#</a> <i>drag</i>.<b>filter</b>([<i>filter</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L126 "Source")
+<a href="#drag_filter" name="drag_filter">#</a> <i>drag</i>.<b>filter</b>([<i>filter</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L126 "Source")
 
 If *filter* is specified, sets the filter to the specified function and returns the drag behavior. If *filter* is not specified, returns the current filter, which defaults to:
 
