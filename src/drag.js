@@ -22,7 +22,8 @@ function touchable() {
   return "ontouchstart" in this;
 }
 
-export default function() {
+export default function(options) {
+  options = options || {};
   var filter = defaultFilter,
       container = defaultContainer,
       subject = defaultSubject,
@@ -38,7 +39,7 @@ export default function() {
   function drag(selection) {
     selection
         .on("mousedown.drag", mousedowned)
-      .filter(touchable)
+      .filter(options.touch === undefined ? touchable : function() { return !! options.touch; })
         .on("touchstart.drag", touchstarted)
         .on("touchmove.drag", touchmoved)
         .on("touchend.drag touchcancel.drag", touchended)

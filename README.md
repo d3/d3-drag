@@ -60,9 +60,13 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 <br>⁴ Necessary to allow [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7) on touch input; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
-<a href="#drag" name="drag">#</a> d3.<b>drag</b>() [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js "Source")
+<a href="#drag" name="drag">#</a> d3.<b>drag</b>([options]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js "Source")
 
 Creates a new drag behavior. The returned behavior, [*drag*](#_drag), is both an object and a function, and is typically applied to selected elements via [*selection*.call](https://github.com/d3/d3-selection#selection_call).
+
+`options` can contain the following keys:
+
+* `touch`: can be `true` to register touch events on the selection or `false` to not register them. If unspecified it will auto-detect the touch capabilities of the device.
 
 <a href="#_drag" name="_drag">#</a> <i>drag</i>(<i>selection</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L31 "Source")
 
