@@ -175,9 +175,9 @@ See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 
 Changes to registered listeners via *drag*.on during a drag gesture *do not affect* the current drag gesture. Instead, you must use [*event*.on](#event_on), which also allows you to register temporary event listeners for the current drag gesture. **Separate events are dispatched for each active pointer** during a drag gesture. For example, if simultaneously dragging multiple subjects with multiple fingers, a start event is dispatched for each finger, even if both fingers start touching simultaneously. See [Drag Events](#drag-events) for more.
 
-<a href="#touchable" name="touchable">#</a> <i>drag</i>.<b>touchable</b>(<i>touchable</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L162 "Source")
+<a href="#touchable" name="touchable">#</a> <i>drag</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L162 "Source")
 
-If *touchable* is *true* touch event will always be registered. If it is *false* they will never be. The default behavior is to auto-detect the touch capabilities of the device.
+If *touchable* is *true* touch events will always be registered. If it is *false* they will never be. The default behavior is to auto-detect the touch capabilities of the device. By calling this function without arguments it will return the current value of *touchable*.
 
 <a href="#dragDisable" name="dragDisable">#</a> d3.<b>dragDisable</b>(<i>window</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/nodrag.js#L4 "Source")
 
