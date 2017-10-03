@@ -114,7 +114,7 @@ function filter() {
 
 If the filter returns falsey, the initiating event is ignored and no drag gestures are started. Thus, the filter determines which input events are ignored; the default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
-<a href="#touchable" name="touchable">#</a> <i>drag</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L153 "Source")
+<a href="#drag_touchable" name="drag_touchable">#</a> <i>drag</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L153 "Source")
 
 If *touchable* is specified, sets the touch support detector to the specified function and returns the drag behavior. If *touchable* is not specified, returns the current touch support detector, which defaults to:
 
