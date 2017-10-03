@@ -114,6 +114,18 @@ function filter() {
 
 If the filter returns falsey, the initiating event is ignored and no drag gestures are started. Thus, the filter determines which input events are ignored; the default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
+<a href="#touchable" name="touchable">#</a> <i>drag</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L153 "Source")
+
+If *touchable* is specified, sets the touch support detector to the specified function and returns the drag behavior. If *touchable* is not specified, returns the current touch support detector, which defaults to:
+
+```js
+function touchable() {
+  return "ontouchstart" in this;
+}
+```
+
+Touch event listeners are only registered if the detector returns truthy for the corresponding element when the drag behavior is [applied](#_drag). The default detector works well for most browsers that are capable of touch input, but not all; Chrome’s mobile device emulator, for example, fails detection.
+
 <a href="#drag_subject" name="drag_subject">#</a> <i>drag</i>.<b>subject</b>([<i>subject</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L149 "Source")
 
 If *subject* is specified, sets the subject accessor to the specified object or function and returns the drag behavior. If *subject* is not specified, returns the current subject accessor, which defaults to:
@@ -174,18 +186,6 @@ The *typenames* is a string containing one or more *typename* separated by white
 See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 
 Changes to registered listeners via *drag*.on during a drag gesture *do not affect* the current drag gesture. Instead, you must use [*event*.on](#event_on), which also allows you to register temporary event listeners for the current drag gesture. **Separate events are dispatched for each active pointer** during a drag gesture. For example, if simultaneously dragging multiple subjects with multiple fingers, a start event is dispatched for each finger, even if both fingers start touching simultaneously. See [Drag Events](#drag-events) for more.
-
-<a href="#touchable" name="touchable">#</a> <i>drag</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L153 "Source")
-
-If *touchable* is specified, sets the touch support detector to the specified function and returns the drag behavior. If *touchable* is not specified, returns the current touch support detector, which defaults to:
-
-```js
-function touchable() {
-  return "ontouchstart" in this;
-}
-```
-
-Touch event listeners are only registered if the detector returns truthy for the corresponding element when the drag behavior is [applied](#_drag). The default detector works well for most browsers that are capable of touch input, but not all; Chrome’s mobile device emulator, for example, fails detection.
 
 <a href="#dragDisable" name="dragDisable">#</a> d3.<b>dragDisable</b>(<i>window</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/nodrag.js#L4 "Source")
 
