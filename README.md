@@ -60,13 +60,9 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 <br>⁴ Necessary to allow [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7) on touch input; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 
-<a href="#drag" name="drag">#</a> d3.<b>drag</b>([options]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js "Source")
+<a href="#drag" name="drag">#</a> d3.<b>drag</b>() [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js "Source")
 
 Creates a new drag behavior. The returned behavior, [*drag*](#_drag), is both an object and a function, and is typically applied to selected elements via [*selection*.call](https://github.com/d3/d3-selection#selection_call).
-
-`options` can contain the following keys:
-
-* `touch`: can be `true` to register touch events on the selection or `false` to not register them. If unspecified it will auto-detect the touch capabilities of the device.
 
 <a href="#_drag" name="_drag">#</a> <i>drag</i>(<i>selection</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L31 "Source")
 
@@ -178,6 +174,10 @@ The *typenames* is a string containing one or more *typename* separated by white
 See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 
 Changes to registered listeners via *drag*.on during a drag gesture *do not affect* the current drag gesture. Instead, you must use [*event*.on](#event_on), which also allows you to register temporary event listeners for the current drag gesture. **Separate events are dispatched for each active pointer** during a drag gesture. For example, if simultaneously dragging multiple subjects with multiple fingers, a start event is dispatched for each finger, even if both fingers start touching simultaneously. See [Drag Events](#drag-events) for more.
+
+<a href="#touchable" name="touchable">#</a> <i>drag</i>.<b>touchable</b>(<i>touchable</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L162 "Source")
+
+If *touchable* is *true* touch event will always be registered. If it is *false* they will never be. The default behavior is to auto-detect the touch capabilities of the device.
 
 <a href="#dragDisable" name="dragDisable">#</a> d3.<b>dragDisable</b>(<i>window</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/nodrag.js#L4 "Source")
 
