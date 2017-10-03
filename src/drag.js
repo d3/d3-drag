@@ -22,8 +22,7 @@ function touchable() {
   return "ontouchstart" in this;
 }
 
-export default function(options) {
-  options = options || {};
+export default function() {
   var filter = defaultFilter,
       container = defaultContainer,
       subject = defaultSubject,
@@ -34,12 +33,13 @@ export default function(options) {
       mousedowny,
       mousemoving,
       touchending,
-      clickDistance2 = 0;
+      clickDistance2 = 0,
+      isTouchable = null;
 
   function drag(selection) {
     selection
         .on("mousedown.drag", mousedowned)
-      .filter(options.touch === undefined ? touchable : function() { return !! options.touch; })
+      .filter(isTouchable === null ? touchable : function() { return isTouchable; })
         .on("touchstart.drag", touchstarted)
         .on("touchmove.drag", touchmoved)
         .on("touchend.drag touchcancel.drag", touchended)
@@ -158,6 +158,10 @@ export default function(options) {
   drag.clickDistance = function(_) {
     return arguments.length ? (clickDistance2 = (_ = +_) * _, drag) : Math.sqrt(clickDistance2);
   };
+
+  drag.touchable = function(_) {
+    return arguments.length ? (isTouchable = _, drag) : isTouchable;
+  }
 
   return drag;
 }
