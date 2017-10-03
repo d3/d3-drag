@@ -18,7 +18,7 @@ function defaultSubject(d) {
   return d == null ? {x: event.x, y: event.y} : d;
 }
 
-function touchable() {
+function defaultTouchable() {
   return "ontouchstart" in this;
 }
 
@@ -26,6 +26,7 @@ export default function() {
   var filter = defaultFilter,
       container = defaultContainer,
       subject = defaultSubject,
+      touchable = defaultTouchable,
       gestures = {},
       listeners = dispatch("start", "drag", "end"),
       active = 0,
@@ -33,13 +34,12 @@ export default function() {
       mousedowny,
       mousemoving,
       touchending,
-      clickDistance2 = 0,
-      isTouchable = null;
+      clickDistance2 = 0;
 
   function drag(selection) {
     selection
         .on("mousedown.drag", mousedowned)
-      .filter(isTouchable === null ? touchable : function() { return isTouchable; })
+      .filter(touchable)
         .on("touchstart.drag", touchstarted)
         .on("touchmove.drag", touchmoved)
         .on("touchend.drag touchcancel.drag", touchended)
@@ -150,6 +150,10 @@ export default function() {
     return arguments.length ? (subject = typeof _ === "function" ? _ : constant(_), drag) : subject;
   };
 
+  drag.touchable = function(_) {
+    return arguments.length ? (touchable = typeof _ === "function" ? _ : constant(_), drag) : touchable;
+  };
+
   drag.on = function() {
     var value = listeners.on.apply(listeners, arguments);
     return value === listeners ? drag : value;
@@ -158,10 +162,6 @@ export default function() {
   drag.clickDistance = function(_) {
     return arguments.length ? (clickDistance2 = (_ = +_) * _, drag) : Math.sqrt(clickDistance2);
   };
-
-  drag.touchable = function(_) {
-    return arguments.length ? (isTouchable = _, drag) : isTouchable;
-  }
 
   return drag;
 }
