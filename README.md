@@ -177,7 +177,15 @@ Changes to registered listeners via *drag*.on during a drag gesture *do not affe
 
 <a href="#touchable" name="touchable">#</a> <i>drag</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/drag.js#L162 "Source")
 
-If *touchable* is *true* touch events will always be registered. If it is *false* they will never be. The default behavior is to auto-detect the touch capabilities of the device. By calling this function without arguments it will return the current value of *touchable*.
+If *touchable* is specified, sets the touch support detector to the specified function and returns the drag behavior. If *touchable* is not specified, returns the current touch support detector, which defaults to:
+
+```js
+function touchable() {
+  return "ontouchstart" in this;
+}
+```
+
+Touch event listeners are only registered if the detector returns truthy for the corresponding element when the drag behavior is [applied](#_drag). The default detector works well for most browsers that are capable of touch input, but not all; Chrome’s mobile device emulator, for example, fails detection.
 
 <a href="#dragDisable" name="dragDisable">#</a> d3.<b>dragDisable</b>(<i>window</i>) [<>](https://github.com/d3/d3-drag/blob/master/src/nodrag.js#L4 "Source")
 
