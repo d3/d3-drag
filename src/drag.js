@@ -151,7 +151,7 @@ export default function() {
   };
 
   drag.touchable = function(_) {
-    return arguments.length ? (touchable = typeof _ === "function" ? _ : constant(_), drag) : touchable;
+    return arguments.length ? (touchable = typeof _ === "function" ? _ : constant(!!_), drag) : touchable;
   };
 
   drag.on = function() {
