@@ -51,7 +51,9 @@ export default function() {
     if (touchending || !filter.apply(this, arguments)) return;
     var gesture = beforestart("mouse", container.apply(this, arguments), mouse, this, arguments);
     if (!gesture) return;
-    select(event.view).on("mousemove.drag", mousemoved, true).on("mouseup.drag", mouseupped, true);
+    select(event.view)
+      .on("mousemove.drag", mousemoved, {capture: true, passive: false})
+      .on("mouseup.drag", mouseupped, {capture: true, passive: false});
     nodrag(event.view);
     nopropagation();
     mousemoving = false;
