@@ -15,7 +15,7 @@
     "name": "Mike Bostock",
     "url": "http://bost.ocks.org/mike"
   },
-  "main": "build/d3-drag.js",
+  "main": "dist/d3-drag.min.js",
   "module": "index",
   "jsnext:main": "index",
   "repository": {
@@ -23,20 +23,19 @@
     "url": "https://github.com/d3/d3-drag.git"
   },
   "scripts": {
-    "pretest": "rm -rf build && mkdir build && rollup -c --banner \"$(preamble)\"",
+    "pretest": "rollup -c",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
-    "prepublishOnly": "npm run test && uglifyjs -b beautify=false,preamble=\"'$(preamble)'\" build/d3-drag.js -c -m -o build/d3-drag.min.js",
-    "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../d3-drag/build/d3-drag.js d3-drag.v1.js && cp ../d3-drag/build/d3-drag.min.js d3-drag.v1.min.js && git add d3-drag.v1.js d3-drag.v1.min.js && git commit -m \"d3-drag ${npm_package_version}\" && git push && cd - && zip -j build/d3-drag.zip -- LICENSE README.md build/d3-drag.js build/d3-drag.min.js"
+    "prepublishOnly": "rm -rf dist && yarn test",
+    "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v1.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v1.min.js && git add ${npm_package_name}.v1.js ${npm_package_name}.v1.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd - && zip -j dist/${npm_package_name}.zip -- LICENSE README.md dist/${npm_package_name}.js dist/${npm_package_name}.min.js"
   },
   "dependencies": {
     "d3-dispatch": "1",
     "d3-selection": "1"
   },
   "devDependencies": {
-    "eslint": "4",
-    "package-preamble": "0.1",
-    "rollup": "0.50",
-    "tape": "4",
-    "uglify-js": "3"
+    "eslint": "5",
+    "rollup": "0.64",
+    "rollup-plugin-terser": "1",
+    "tape": "4"
   }
 }
