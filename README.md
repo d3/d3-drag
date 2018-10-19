@@ -52,7 +52,7 @@ This table describes how the drag behavior interprets native events:
 | touchend     | selection         | end        | no⁴                |
 | touchcancel  | selection         | end        | no⁴                |
 
-The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation). If you want to prevent some events from initiating a drag gesture, use [*drag*.filter](#drag_filter).
+The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation). If you want to prevent some events from initiating a drag gesture, use [*drag*.filter](#drag_filter). If you want to allow events to propagate, use [*drag*.allowPropagation](#drag_allowPropagation).
 
 ¹ Necessary to capture events outside an iframe; see [#9](https://github.com/d3/d3-drag/issues/9).
 <br>² Only applies during an active, mouse-based gesture; see [#9](https://github.com/d3/d3-drag/issues/9).
@@ -194,6 +194,10 @@ Prevents native drag-and-drop and text selection on the specified *window*. As a
 <a href="#dragEnable" name="dragEnable">#</a> d3.<b>dragEnable</b>(<i>window</i>[, <i>noclick</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/nodrag.js#L15 "Source")
 
 Allows native drag-and-drop and text selection on the specified *window*; undoes the effect of [d3.dragDisable](#dragDisable). This method is intended to be called on mouseup, preceded by [d3.dragDisable](#dragDisable) on mousedown. If *noclick* is true, this method also temporarily suppresses click events. The suppression of click events expires after a zero-millisecond timeout, such that it only suppress the click event that would immediately follow the current mouseup event, if any.
+
+<a href="#allowPropagation" name="allowPropagation">#</a> d3.<b>allowPropagation</b>([<i>allowPropagation</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/nodrag.js#L167 "Source")
+
+If *allowPropagation* is specified, sets the specified propagation setting and returns the drag behavior. If *allowPropagation* is not specified, returns the current propagation setting, which defaults to: *false*.
 
 ### Drag Events
 
