@@ -34,7 +34,7 @@ export default function() {
       mousedowny,
       mousemoving,
       touchending,
-      clickDistance2 = 0
+      clickDistance2 = 0,
       allowPropagation = false;
 
   function drag(selection) {
