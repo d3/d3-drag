@@ -1,10 +1,10 @@
 import {event} from "d3-selection";
 
-export function nopropagation() {
-  event.stopImmediatePropagation();
+export function nopropagation(allowPropagation) {
+  !allowPropagation && event.stopImmediatePropagation();
 }
 
-export default function() {
+export default function(allowPropagation) {
   event.preventDefault();
-  event.stopImmediatePropagation();
+  !allowPropagation && event.stopImmediatePropagation();
 }

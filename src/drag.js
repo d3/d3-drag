@@ -34,7 +34,8 @@ export default function() {
       mousedowny,
       mousemoving,
       touchending,
-      clickDistance2 = 0;
+      clickDistance2 = 0
+      allowPropagation = false;
 
   function drag(selection) {
     selection
@@ -53,7 +54,7 @@ export default function() {
     if (!gesture) return;
     select(event.view).on("mousemove.drag", mousemoved, true).on("mouseup.drag", mouseupped, true);
     nodrag(event.view);
-    nopropagation();
+    nopropagation(allowPropagation);
     mousemoving = false;
     mousedownx = event.clientX;
     mousedowny = event.clientY;
@@ -61,7 +62,7 @@ export default function() {
   }
 
   function mousemoved() {
-    noevent();
+    noevent(allowPropagation);
     if (!mousemoving) {
       var dx = event.clientX - mousedownx, dy = event.clientY - mousedowny;
       mousemoving = dx * dx + dy * dy > clickDistance2;
@@ -72,7 +73,7 @@ export default function() {
   function mouseupped() {
     select(event.view).on("mousemove.drag mouseup.drag", null);
     yesdrag(event.view, mousemoving);
-    noevent();
+    noevent(allowPropagation);
     gestures.mouse("end");
   }
 
@@ -84,7 +85,7 @@ export default function() {
 
     for (i = 0; i < n; ++i) {
       if (gesture = beforestart(touches[i].identifier, c, touch, this, arguments)) {
-        nopropagation();
+        nopropagation(allowPropagation);
         gesture("start");
       }
     }
@@ -96,7 +97,7 @@ export default function() {
 
     for (i = 0; i < n; ++i) {
       if (gesture = gestures[touches[i].identifier]) {
-        noevent();
+        noevent(allowPropagation);
         gesture("drag");
       }
     }
@@ -110,7 +111,7 @@ export default function() {
     touchending = setTimeout(function() { touchending = null; }, 500); // Ghost clicks are delayed!
     for (i = 0; i < n; ++i) {
       if (gesture = gestures[touches[i].identifier]) {
-        nopropagation();
+        nopropagation(allowPropagation);
         gesture("end");
       }
     }
@@ -161,6 +162,10 @@ export default function() {
 
   drag.clickDistance = function(_) {
     return arguments.length ? (clickDistance2 = (_ = +_) * _, drag) : Math.sqrt(clickDistance2);
+  };
+
+  drag.allowPropagation = function(_) {
+    return arguments.length ? (allowPropagation = typeof _ === "function" ? _ : constant(!!_), drag) : allowPropagation;
   };
 
   return drag;
