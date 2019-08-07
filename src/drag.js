@@ -7,7 +7,7 @@ import DragEvent from "./event";
 
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {
-  return !event.button;
+  return !event.ctrlKey && !event.button;
 }
 
 function defaultContainer() {
