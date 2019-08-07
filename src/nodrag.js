@@ -1,5 +1,5 @@
 import {select} from "d3-selection";
-import noevent from "./noevent";
+import noevent from "./noevent.js";
 
 export default function(view) {
   var root = view.document.documentElement,

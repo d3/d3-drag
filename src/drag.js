@@ -1,9 +1,9 @@
 import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
-import nodrag, {yesdrag} from "./nodrag";
-import noevent, {nopropagation} from "./noevent";
-import constant from "./constant";
-import DragEvent from "./event";
+import nodrag, {yesdrag} from "./nodrag.js";
+import noevent, {nopropagation} from "./noevent.js";
+import constant from "./constant.js";
+import DragEvent from "./event.js";
 
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {
