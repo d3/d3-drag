@@ -37,6 +37,7 @@
     "d3-dispatch": "1",
     "d3-selection": "1"
   },
+  "sideEffects": false,
   "devDependencies": {
     "eslint": "6",
     "rollup": "1",
