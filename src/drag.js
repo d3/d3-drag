@@ -147,7 +147,7 @@ export default function() {
         type,
         that,
         new DragEvent(type, {
-          soureEvent: event,
+          sourceEvent: event,
           subject: s,
           target: drag,
           identifier,
