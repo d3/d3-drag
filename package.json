@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "d3-dispatch": "1",
-    "d3-selection": "1"
+    "d3-selection": "2"
   },
   "sideEffects": false,
   "devDependencies": {
