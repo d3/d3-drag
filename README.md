@@ -215,7 +215,7 @@ The *event*.active field is useful for detecting the first start event and the l
 
 The *event* object also exposes the [*event*.on](#event_on) method.
 
-<a href="#event_on" name="event_on">#</a> <i>event</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>]) [<>](https://github.com/d3/d3-drag/blob/master/src/event.js "Source")
+<a href="#event_on" name="event_on">#</a> <i>event</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>]) · [Source](https://github.com/d3/d3-drag/blob/master/src/event.js)
 
 Equivalent to [*drag*.on](#drag_on), but only applies to the current drag gesture. Before the drag gesture starts, a [copy](https://github.com/d3/d3-dispatch#dispatch_copy) of the current drag [event listeners](#drag_on) is made. This copy is bound to the current drag gesture and modified by *event*.on. This is useful for temporary listeners that only receive events for the current drag gesture. For example, this start event listener registers temporary drag and end event listeners as closures:
 
