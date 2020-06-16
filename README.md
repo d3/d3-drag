@@ -183,6 +183,7 @@ The *typenames* is a string containing one or more *typename* separated by white
 * `start` - after a new pointer becomes active (on mousedown or touchstart).
 * `drag` - after an active pointer moves (on mousemove or touchmove).
 * `end` - after an active pointer becomes inactive (on mouseup, touchend or touchcancel).
+* `init` - when the drag behavior is applied.
 
 See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 

@@ -28,7 +28,7 @@ export default function() {
       subject = defaultSubject,
       touchable = defaultTouchable,
       gestures = {},
-      listeners = dispatch("start", "drag", "end"),
+      listeners = dispatch("start", "drag", "end", "init"),
       active = 0,
       mousedownx,
       mousedowny,
@@ -45,6 +45,13 @@ export default function() {
         .on("touchend.drag touchcancel.drag", touchended)
         .style("touch-action", "none")
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
+    selection.each(function(d) {
+      var that = this;
+      listeners.call("init", that,
+        new DragEvent("init", { target: drag, dispatch: listeners }),
+        d
+      );
+    });
   }
 
   function mousedowned(event, d) {
