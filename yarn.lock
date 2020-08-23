@@ -174,10 +174,10 @@ d3-dispatch@1:
   resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-1.0.5.tgz#e25c10a186517cd6c82dd19ea018f07e01e39015"
   integrity sha512-vwKx+lAqB1UuCeklr6Jh1bvC4SZgbSqbkGBLClItFBIYH4vqDJCA7qfoy14lXmJdnBOdxndAMxjCbImJYW7e6g==
 
-d3-selection@1:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.4.0.tgz#ab9ac1e664cf967ebf1b479cc07e28ce9908c474"
-  integrity sha512-EYVwBxQGEjLCKF2pJ4+yrErskDnz5v403qvAid96cNdCMr8rmCYfY5RGzWz24mdIbxmDf6/4EAH+K9xperD5jg==
+d3-selection@2:
+  version "2.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-2.0.0-rc.2.tgz#530fffde9fc6007d90c79d39bc4b2777e7288f6e"
+  integrity sha512-3sXAgCMsIi6zmZFGwgI2fFi9f99vzBRUKZoKOJq8yWDDAci00QgJQfe7xW0VqUW2hItUvGVl61M8WY4Cxg8soQ==
 
 debug@^4.0.1:
   version "4.1.1"
