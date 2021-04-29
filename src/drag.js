@@ -140,7 +140,7 @@ export default function() {
       var p0 = p, n;
       switch (type) {
         case "start": gestures[identifier] = gesture, n = active++; break;
-        case "end": delete gestures[identifier], --active; // nobreak
+        case "end": delete gestures[identifier], --active; // falls through
         case "drag": p = pointer(touch || event, container), n = active; break;
       }
       dispatch.call(
