@@ -4,9 +4,12 @@
     "sourceType": "module",
     "ecmaVersion": 8
   },
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "rules": {
     "no-cond-assign": 0,
-    "no-fallthrough": 0,
-    "no-undef": 0
+    "no-fallthrough": 0
   }
 }
