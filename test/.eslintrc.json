@@ -8,8 +8,5 @@
     "browser": true,
     "node": true,
     "mocha": true
-  },
-  "rules": {
-    "no-cond-assign": 0
   }
 }

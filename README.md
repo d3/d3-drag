@@ -24,9 +24,11 @@ If you use npm, `npm install d3-drag`. You can also download the [latest release
 
 ```html
 <script type="module">
+
 import {drag} from "https://cdn.skypack.dev/d3-drag@3";
 
 const handler = drag();
+
 </script>
 ```
 
