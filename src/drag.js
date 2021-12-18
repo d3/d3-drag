@@ -78,6 +78,7 @@ export default function() {
 
   function beforestart(that, container, event, d, identifier, touch) {
     var dispatch = listeners.copy(),
+        pointerType = event.pointerType,
         p = pointer(touch || event, container), dx, dy,
         s;
 
@@ -85,6 +86,7 @@ export default function() {
         sourceEvent: event,
         target: drag,
         identifier,
+        pointerType,
         active,
         x: p[0],
         y: p[1],
@@ -111,6 +113,7 @@ export default function() {
           subject: s,
           target: drag,
           identifier,
+          pointerType,
           active: n,
           x: p[0] + dx,
           y: p[1] + dy,
