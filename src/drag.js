@@ -38,22 +38,20 @@ export default function() {
 
   function drag(selection) {
     selection
-        .on("mousedown.drag", mousedowned)
+        .on("pointerdown.drag", pointerdowned)
       .filter(touchable)
-        .on("touchstart.drag", touchstarted)
-        .on("touchmove.drag", touchmoved, nonpassive)
-        .on("touchend.drag touchcancel.drag", touchended)
         .style("touch-action", "none")
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
   }
 
-  function mousedowned(event, d) {
+  function pointerdowned(event, d) {
     if (touchending || !filter.call(this, event, d)) return;
-    var gesture = beforestart(this, container.call(this, event, d), event, d, "mouse");
+
+    var gesture = beforestart(this, container.call(this, event, d), event, d, event.pointerId);
     if (!gesture) return;
     select(event.view)
-      .on("mousemove.drag", mousemoved, nonpassivecapture)
-      .on("mouseup.drag", mouseupped, nonpassivecapture);
+      .on("pointermove.drag", pointermoved, nonpassivecapture)
+      .on("pointerup.drag", pointerupped, nonpassivecapture);
     nodrag(event.view);
     nopropagation(event);
     mousemoving = false;
@@ -62,60 +60,20 @@ export default function() {
     gesture("start", event);
   }
 
-  function mousemoved(event) {
+  function pointermoved(event) {
     noevent(event);
     if (!mousemoving) {
       var dx = event.clientX - mousedownx, dy = event.clientY - mousedowny;
       mousemoving = dx * dx + dy * dy > clickDistance2;
     }
-    gestures.mouse("drag", event);
+    gestures[event.pointerId]("drag", event);
   }
 
-  function mouseupped(event) {
-    select(event.view).on("mousemove.drag mouseup.drag", null);
+  function pointerupped(event) {
+    select(event.view).on("pointermove.drag pointerup.drag", null);
     yesdrag(event.view, mousemoving);
     noevent(event);
-    gestures.mouse("end", event);
-  }
-
-  function touchstarted(event, d) {
-    if (!filter.call(this, event, d)) return;
-    var touches = event.changedTouches,
-        c = container.call(this, event, d),
-        n = touches.length, i, gesture;
-
-    for (i = 0; i < n; ++i) {
-      if (gesture = beforestart(this, c, event, d, touches[i].identifier, touches[i])) {
-        nopropagation(event);
-        gesture("start", event, touches[i]);
-      }
-    }
-  }
-
-  function touchmoved(event) {
-    var touches = event.changedTouches,
-        n = touches.length, i, gesture;
-
-    for (i = 0; i < n; ++i) {
-      if (gesture = gestures[touches[i].identifier]) {
-        noevent(event);
-        gesture("drag", event, touches[i]);
-      }
-    }
-  }
-
-  function touchended(event) {
-    var touches = event.changedTouches,
-        n = touches.length, i, gesture;
-
-    if (touchending) clearTimeout(touchending);
-    touchending = setTimeout(function() { touchending = null; }, 500); // Ghost clicks are delayed!
-    for (i = 0; i < n; ++i) {
-      if (gesture = gestures[touches[i].identifier]) {
-        nopropagation(event);
-        gesture("end", event, touches[i]);
-      }
-    }
+    gestures[event.pointerId]("end", event);
   }
 
   function beforestart(that, container, event, d, identifier, touch) {
