@@ -34,6 +34,8 @@ export default function() {
       mousedowny,
       mousemoving,
       touchending,
+      framerate = 60,
+      timestamp = Date.now(),
       clickDistance2 = 0;
 
   function drag(selection) {
@@ -45,6 +47,12 @@ export default function() {
   }
 
   function pointerdowned(event, d) {
+    requestAnimationFrame((t1) => {
+      requestAnimationFrame((t2) => {
+        framerate = 1000 / (t2 - t1);
+      });
+    });
+
     if (touchending || !filter.call(this, event, d)) return;
 
     var gesture = beforestart(this, container.call(this, event, d), event, d, event.pointerId);
@@ -61,6 +69,10 @@ export default function() {
   }
 
   function pointermoved(event) {
+    // Polling rate on some devices means our calculation of dx/dy will always result in 0 unless we wait long enough between updates
+    if (Date.now() - timestamp < (1000 / framerate)) return; 
+    timestamp = Date.now();
+    
     noevent(event);
     if (!mousemoving) {
       var dx = event.clientX - mousedownx, dy = event.clientY - mousedowny;
@@ -94,10 +106,9 @@ export default function() {
         dy: 0,
         dispatch
       }), d)) == null) return;
-
-    dx = s.x - p[0] || 0;
-    dy = s.y - p[1] || 0;
-
+      dx = s.x - p[0] || 0;
+      dy = s.y - p[1] || 0;
+      
     return function gesture(type, event, touch) {
       var p0 = p, n;
       switch (type) {
@@ -105,6 +116,7 @@ export default function() {
         case "end": delete gestures[identifier], --active; // falls through
         case "drag": p = pointer(touch || event, container), n = active; break;
       }
+      console.log(p, p0);
       dispatch.call(
         type,
         that,
@@ -114,6 +126,8 @@ export default function() {
           target: drag,
           identifier,
           pointerType,
+          p,
+          p0,
           active: n,
           x: p[0] + dx,
           y: p[1] + dy,
