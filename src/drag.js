@@ -126,8 +126,6 @@ export default function() {
           target: drag,
           identifier,
           pointerType,
-          p,
-          p0,
           active: n,
           x: p[0] + dx,
           y: p[1] + dy,
