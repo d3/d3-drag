@@ -116,7 +116,7 @@ export default function() {
         case "end": delete gestures[identifier], --active; // falls through
         case "drag": p = pointer(touch || event, container), n = active; break;
       }
-      console.log(p, p0);
+
       dispatch.call(
         type,
         that,
