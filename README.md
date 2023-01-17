@@ -84,10 +84,10 @@ Applies this drag behavior to the specified [*selection*](https://github.com/d3/
 d3.selectAll(".node").call(d3.drag().on("start", started));
 ```
 
-Internally, the drag behavior uses [*selection*.on](https://github.com/d3/d3-selection#selection_on) to bind the necessary event listeners for dragging. The listeners use the name `drag`, so you can subsequently unbind the drag behavior as follows:
+Internally, the drag behavior uses [*selection*.on](https://github.com/d3/d3-selection#selection_on) to bind the necessary event listeners for dragging. The listeners use the name `.drag`, so you can subsequently unbind the drag behavior as follows:
 
 ```js
-selection.on("drag", null);
+selection.on(".drag", null);
 ```
 
 Applying the drag behavior also sets the [-webkit-tap-highlight-color](https://developer.apple.com/library/mac/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html#//apple_ref/doc/uid/TP40006510-SW5) style to transparent, disabling the tap highlight on iOS. If you want a different tap highlight color, remove or re-apply this style after applying the drag behavior.
