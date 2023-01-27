@@ -2,6 +2,9 @@ import {select} from "d3-selection";
 import noevent, {nonpassivecapture} from "./noevent.js";
 
 export default function(view) {
+  if (!view) {
+    return;
+  }
   var root = view.document.documentElement,
       selection = select(view).on("dragstart.drag", noevent, nonpassivecapture);
   if ("onselectstart" in root) {
