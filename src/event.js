@@ -3,6 +3,7 @@ export default function DragEvent(type, {
   subject,
   target,
   identifier,
+  pointerType,
   active,
   x, y, dx, dy,
   dispatch
@@ -13,6 +14,7 @@ export default function DragEvent(type, {
     subject: {value: subject, enumerable: true, configurable: true},
     target: {value: target, enumerable: true, configurable: true},
     identifier: {value: identifier, enumerable: true, configurable: true},
+    pointerType: {value: pointerType, enumerable: true, configurable: true},
     active: {value: active, enumerable: true, configurable: true},
     x: {value: x, enumerable: true, configurable: true},
     y: {value: y, enumerable: true, configurable: true},
