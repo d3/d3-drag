@@ -1,7 +1,7 @@
-import {dispatch} from "d3-dispatch";
-import {select, pointer} from "d3-selection";
-import nodrag, {yesdrag} from "./nodrag.js";
-import noevent, {nonpassive, nonpassivecapture, nopropagation} from "./noevent.js";
+import { dispatch } from "d3-dispatch";
+import { select, pointer } from "d3-selection";
+import nodrag, { yesdrag } from "./nodrag.js";
+import noevent, { nonpassivecapture, nopropagation } from "./noevent.js";
 import constant from "./constant.js";
 import DragEvent from "./event.js";
 
@@ -15,45 +15,57 @@ function defaultContainer() {
 }
 
 function defaultSubject(event, d) {
-  return d == null ? {x: event.x, y: event.y} : d;
+  return d == null ? { x: event.x, y: event.y } : d;
 }
 
 function defaultTouchable() {
-  return navigator.maxTouchPoints || ("ontouchstart" in this);
+  return navigator.maxTouchPoints || "ontouchstart" in this;
 }
 
-export default function() {
+export default function () {
   var filter = defaultFilter,
-      container = defaultContainer,
-      subject = defaultSubject,
-      touchable = defaultTouchable,
-      gestures = {},
-      listeners = dispatch("start", "drag", "end"),
-      active = 0,
-      mousedownx,
-      mousedowny,
-      mousemoving,
-      touchending,
-      clickDistance2 = 0;
+    container = defaultContainer,
+    subject = defaultSubject,
+    touchable = defaultTouchable,
+    gestures = {},
+    listeners = dispatch("start", "drag", "end"),
+    active = 0,
+    mousedownx,
+    mousedowny,
+    mousemoving,
+    touchending,
+    framerate = 60,
+    timestamp = Date.now(),
+    clickDistance2 = 0;
 
   function drag(selection) {
     selection
-        .on("mousedown.drag", mousedowned)
+      .on("pointerdown.drag", pointerdowned)
       .filter(touchable)
-        .on("touchstart.drag", touchstarted)
-        .on("touchmove.drag", touchmoved, nonpassive)
-        .on("touchend.drag touchcancel.drag", touchended)
-        .style("touch-action", "none")
-        .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
+      .style("touch-action", "none")
+      .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
   }
 
-  function mousedowned(event, d) {
+  function pointerdowned(event, d) {
+    requestAnimationFrame((t1) => {
+      requestAnimationFrame((t2) => {
+        framerate = 1000 / (t2 - t1);
+      });
+    });
+
     if (touchending || !filter.call(this, event, d)) return;
-    var gesture = beforestart(this, container.call(this, event, d), event, d, "mouse");
+
+    var gesture = beforestart(
+      this,
+      container.call(this, event, d),
+      event,
+      d,
+      event.pointerId
+    );
     if (!gesture) return;
     select(event.view)
-      .on("mousemove.drag", mousemoved, nonpassivecapture)
-      .on("mouseup.drag", mouseupped, nonpassivecapture);
+      .on("pointermove.drag", pointermoved, nonpassivecapture)
+      .on("pointerup.drag", pointerupped, nonpassivecapture);
     nodrag(event.view);
     nopropagation(event);
     mousemoving = false;
@@ -62,89 +74,75 @@ export default function() {
     gesture("start", event);
   }
 
-  function mousemoved(event) {
+  function pointermoved(event) {
+    // Polling rate on some devices means our calculation of dx/dy will always result in 0 unless we wait long enough between updates
+    if (Date.now() - timestamp < 1000 / framerate || !gestures[event.pointerId])
+      return;
+    timestamp = Date.now();
+
     noevent(event);
     if (!mousemoving) {
-      var dx = event.clientX - mousedownx, dy = event.clientY - mousedowny;
+      var dx = event.clientX - mousedownx,
+        dy = event.clientY - mousedowny;
       mousemoving = dx * dx + dy * dy > clickDistance2;
     }
-    gestures.mouse("drag", event);
+
+    gestures[event.pointerId]("drag", event);
   }
 
-  function mouseupped(event) {
-    select(event.view).on("mousemove.drag mouseup.drag", null);
+  function pointerupped(event) {
+    if (!gestures[event.pointerId]) return;
+
+    select(event.view).on("pointermove.drag pointerup.drag", null);
     yesdrag(event.view, mousemoving);
     noevent(event);
-    gestures.mouse("end", event);
-  }
-
-  function touchstarted(event, d) {
-    if (!filter.call(this, event, d)) return;
-    var touches = event.changedTouches,
-        c = container.call(this, event, d),
-        n = touches.length, i, gesture;
-
-    for (i = 0; i < n; ++i) {
-      if (gesture = beforestart(this, c, event, d, touches[i].identifier, touches[i])) {
-        nopropagation(event);
-        gesture("start", event, touches[i]);
-      }
-    }
-  }
-
-  function touchmoved(event) {
-    var touches = event.changedTouches,
-        n = touches.length, i, gesture;
-
-    for (i = 0; i < n; ++i) {
-      if (gesture = gestures[touches[i].identifier]) {
-        noevent(event);
-        gesture("drag", event, touches[i]);
-      }
-    }
-  }
-
-  function touchended(event) {
-    var touches = event.changedTouches,
-        n = touches.length, i, gesture;
-
-    if (touchending) clearTimeout(touchending);
-    touchending = setTimeout(function() { touchending = null; }, 500); // Ghost clicks are delayed!
-    for (i = 0; i < n; ++i) {
-      if (gesture = gestures[touches[i].identifier]) {
-        nopropagation(event);
-        gesture("end", event, touches[i]);
-      }
-    }
+    gestures[event.pointerId]("end", event);
   }
 
   function beforestart(that, container, event, d, identifier, touch) {
     var dispatch = listeners.copy(),
-        p = pointer(touch || event, container), dx, dy,
-        s;
+      pointerType = event.pointerType,
+      p = pointer(touch || event, container),
+      dx,
+      dy,
+      s;
 
-    if ((s = subject.call(that, new DragEvent("beforestart", {
-        sourceEvent: event,
-        target: drag,
-        identifier,
-        active,
-        x: p[0],
-        y: p[1],
-        dx: 0,
-        dy: 0,
-        dispatch
-      }), d)) == null) return;
-
+    if (
+      (s = subject.call(
+        that,
+        new DragEvent("beforestart", {
+          sourceEvent: event,
+          target: drag,
+          identifier,
+          pointerType,
+          active,
+          x: p[0],
+          y: p[1],
+          dx: 0,
+          dy: 0,
+          dispatch,
+        }),
+        d
+      )) == null
+    )
+      return;
     dx = s.x - p[0] || 0;
     dy = s.y - p[1] || 0;
 
     return function gesture(type, event, touch) {
-      var p0 = p, n;
+      var p0 = p,
+        n;
       switch (type) {
-        case "start": gestures[identifier] = gesture, n = active++; break;
-        case "end": delete gestures[identifier], --active; // falls through
-        case "drag": p = pointer(touch || event, container), n = active; break;
+        case "start":
+          (gestures[identifier] = gesture), (n = active++);
+          break;
+        case "end":
+          delete gestures[identifier], --active; // falls through
+        case "drag":
+          (p = pointer(touch || event, container)), (n = active);
+          break;
       }
+
       dispatch.call(
         type,
         that,
@@ -153,41 +151,52 @@ export default function() {
           subject: s,
           target: drag,
           identifier,
+          pointerType,
           active: n,
           x: p[0] + dx,
           y: p[1] + dy,
           dx: p[0] - p0[0],
           dy: p[1] - p0[1],
-          dispatch
+          dispatch,
         }),
         d
       );
     };
   }
 
-  drag.filter = function(_) {
-    return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), drag) : filter;
+  drag.filter = function (_) {
+    return arguments.length
+      ? ((filter = typeof _ === "function" ? _ : constant(!!_)), drag)
+      : filter;
   };
 
-  drag.container = function(_) {
-    return arguments.length ? (container = typeof _ === "function" ? _ : constant(_), drag) : container;
+  drag.container = function (_) {
+    return arguments.length
+      ? ((container = typeof _ === "function" ? _ : constant(_)), drag)
+      : container;
   };
 
-  drag.subject = function(_) {
-    return arguments.length ? (subject = typeof _ === "function" ? _ : constant(_), drag) : subject;
+  drag.subject = function (_) {
+    return arguments.length
+      ? ((subject = typeof _ === "function" ? _ : constant(_)), drag)
+      : subject;
   };
 
-  drag.touchable = function(_) {
-    return arguments.length ? (touchable = typeof _ === "function" ? _ : constant(!!_), drag) : touchable;
+  drag.touchable = function (_) {
+    return arguments.length
+      ? ((touchable = typeof _ === "function" ? _ : constant(!!_)), drag)
+      : touchable;
   };
 
-  drag.on = function() {
+  drag.on = function () {
     var value = listeners.on.apply(listeners, arguments);
     return value === listeners ? drag : value;
   };
 
-  drag.clickDistance = function(_) {
-    return arguments.length ? (clickDistance2 = (_ = +_) * _, drag) : Math.sqrt(clickDistance2);
+  drag.clickDistance = function (_) {
+    return arguments.length
+      ? ((clickDistance2 = (_ = +_) * _), drag)
+      : Math.sqrt(clickDistance2);
   };
 
   return drag;
