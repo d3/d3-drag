@@ -7,6 +7,6 @@
 ## Resources
 
 - [Documentation](https://d3js.org/d3-drag)
-- [Examples](https://observablehq.com/collection/@d3/d3-drag)
+- [Examples](https://observablehq.com/@d3/-/collection/d3-drag)
 - [Releases](https://github.com/d3/d3-drag/releases)
 - [Getting help](https://d3js.org/community)
